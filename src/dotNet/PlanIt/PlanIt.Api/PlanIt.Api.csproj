@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PlanIt.Application\PlanIt.Application.csproj" />
+    <ProjectReference Include="..\PlanIt.Persistence.Mocked\PlanIt.Persistence.Mocked.csproj" />
+    <ProjectReference Include="..\PlanIt.Persistence\PlanIt.Persistence.csproj" />
+  </ItemGroup>
+
+</Project>
