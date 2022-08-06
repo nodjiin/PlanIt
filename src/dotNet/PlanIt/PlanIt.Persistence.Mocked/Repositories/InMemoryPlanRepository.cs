@@ -2,7 +2,7 @@
 using PlanIt.Domain.Entities;
 
 namespace PlanIt.Persistence.Mocked.Repositories;
-public class InMemoryPlanRepository : IPlanrepository
+public class InMemoryPlanRepository : IPlanRepository
 {
     public Task<Plan> AddAsync(Plan entity, CancellationToken token = default)
     {
