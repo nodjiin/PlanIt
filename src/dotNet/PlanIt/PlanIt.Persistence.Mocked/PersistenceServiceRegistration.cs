@@ -8,8 +8,8 @@ public static class PersistenceServiceRegistration
 {
     public static IServiceCollection AddMockedPersistenceServices(this IServiceCollection services)
     {
-        services.AddScoped<IUserRepository, InMemoryUserRepository>();
-        services.AddScoped<IPlanRepository, InMemoryPlanRepository>();
+        services.AddSingleton<IUserRepository, InMemoryUserRepository>();
+        services.AddSingleton<IPlanRepository, InMemoryPlanRepository>();
 
         return services;
     }
