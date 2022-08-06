@@ -1,6 +1,6 @@
 ﻿using PlanIt.Domain.Entities;
 
 namespace PlanIt.Application.Contracts.Persistence;
-public interface IPlanrepository : IAsyncRepository<Plan>
+public interface IPlanRepository : IAsyncRepository<Plan>
 {
 }
