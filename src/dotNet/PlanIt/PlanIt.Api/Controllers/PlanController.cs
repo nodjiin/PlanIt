@@ -18,23 +18,6 @@ public class PlanController : Controller
         _generator = generator;
     }
 
-    [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult> GetAllPlans(CancellationToken token = default)
-    {
-        return Ok(await _repository.ListAllAsync(token).ConfigureAwait(false));
-    }
-
-    [HttpGet("{id}")]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult> GetPlanById(Guid id, CancellationToken token = default)
-    {
-        var plan = await _repository.GetByIdAsync(id, token).ConfigureAwait(false);
-        if (plan is null) return StatusCode(StatusCodes.Status404NotFound);
-        return Ok(plan);
-    }
-
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<Guid>> Create([FromBody] CreatePlanDto createPlanDto, CancellationToken token = default)
@@ -42,6 +25,23 @@ public class PlanController : Controller
         var newPlan = _generator.CreatePlan(createPlanDto.FirstSchedulableDate, createPlanDto.LastSchedulableDate);
         var plan = await _repository.AddAsync(newPlan, token).ConfigureAwait(false);
         return Ok(plan?.Id);
+    }
+
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> Read(CancellationToken token = default)
+    {
+        return Ok(await _repository.ListAllAsync(token).ConfigureAwait(false));
+    }
+
+    [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> Read(Guid id, CancellationToken token = default)
+    {
+        var plan = await _repository.GetByIdAsync(id, token).ConfigureAwait(false);
+        if (plan is null) return StatusCode(StatusCodes.Status404NotFound);
+        return Ok(plan);
     }
 
     [HttpDelete("{id}")]
