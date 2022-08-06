@@ -4,7 +4,7 @@ using PlanIt.Persistence.Mocked.Repositories;
 
 namespace PlanIt.Persistence.Mocked;
 
-public static class PersistenceServiceRegistration
+public static class MockedPersistenceServiceRegistration
 {
     public static IServiceCollection AddMockedPersistenceServices(this IServiceCollection services)
     {
