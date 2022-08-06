@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PlanIt.Domain\PlanIt.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
