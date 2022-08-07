@@ -51,12 +51,9 @@ public class PlanController : Controller
         var planToUpdate = await _repository.GetByIdAsync(updatePlanDto.Id).ConfigureAwait(false);
         if (planToUpdate is null) return StatusCode(StatusCodes.Status404NotFound);
 
-        var user = new User()
-        {
-            Id = new Guid()
-        };
+        if (updatePlanDto.UpdateFirstSchedulableDate) planToUpdate.FirstSchedulableDate = updatePlanDto.FirstSchedulableDate;
+        if (updatePlanDto.UpdateLastSchedulableDate) planToUpdate.LastSchedulableDate = updatePlanDto.LastSchedulableDate;
 
-        planToUpdate.Users.Add(user);
         await _repository.UpdateAsync(planToUpdate).ConfigureAwait(false);
         return Ok();
     }
