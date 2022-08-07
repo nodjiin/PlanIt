@@ -37,6 +37,11 @@ public class InMemoryPlanRepository : IPlanRepository
         return Task.FromResult(plan);
     }
 
+    public Task<Plan?> GetFullPlanByIdAsync(Guid id, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<IReadOnlyList<Plan>> GetPagedResponseAsync(int page, int size, CancellationToken token = default)
     {
         throw new NotImplementedException();
