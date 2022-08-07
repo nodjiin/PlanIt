@@ -45,7 +45,7 @@ public class UserController : ControllerBase
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> Update([FromBody] UpdateUserDto value, CancellationToken token = default)
+    public async Task<ActionResult> Update([FromBody] UpdateUserDto updateUserDto, CancellationToken token = default)
     {
         // TODO update availability
 

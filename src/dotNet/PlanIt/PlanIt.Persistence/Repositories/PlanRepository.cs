@@ -13,6 +13,9 @@ public class PlanRepository : BaseRepository<Plan>, IPlanRepository
     {
         if (DbContext.Plans is null) return null;
 
-        return await DbContext.Plans.Include(p => p.Users).ThenInclude(u => u.Availabilities).SingleOrDefaultAsync(p => p.Id == id, token);
+        return await DbContext.Plans.Include(p => p.Users)
+            .ThenInclude(u => u.Availabilities)
+            .SingleOrDefaultAsync(p => p.Id == id, token)
+            .ConfigureAwait(false);
     }
 }

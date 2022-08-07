@@ -1,6 +1,5 @@
 using PlanIt.Application;
 using PlanIt.Persistence;
-using PlanIt.Persistence.Mocked;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -12,7 +11,8 @@ var isProduction = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") 
 
 if (isDevelopment)
 {
-    builder.Services.AddMockedPersistenceServices();
+    //builder.Services.AddMockedPersistenceServices();
+    builder.Services.AddPersistenceServices(configuration);
 }
 
 if (isProduction)
