@@ -39,7 +39,7 @@ public class PlanController : Controller
     {
         Plan? plan;
 
-        if (fullPlan) plan = await _repository.GetFullPlanByIdAsync(id).ConfigureAwait(false);
+        if (full) plan = await _repository.GetFullPlanByIdAsync(id).ConfigureAwait(false);
         else plan = await _repository.GetByIdAsync(id, token).ConfigureAwait(false);
 
         if (plan is null) return StatusCode(StatusCodes.Status404NotFound);
