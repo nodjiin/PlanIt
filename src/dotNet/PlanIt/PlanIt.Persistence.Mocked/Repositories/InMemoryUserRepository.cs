@@ -19,6 +19,11 @@ public class InMemoryUserRepository : IUserRepository
         throw new NotImplementedException();
     }
 
+    public Task<User?> GetFullUserByIdAsync(Guid id, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<IReadOnlyList<User>> GetPagedResponseAsync(int page, int size, CancellationToken token = default)
     {
         throw new NotImplementedException();

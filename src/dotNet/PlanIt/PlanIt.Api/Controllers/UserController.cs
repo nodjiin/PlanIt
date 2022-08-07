@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PlanIt.Application.Contracts.Persistence;
+using PlanIt.Application.Dtos.Availability;
 using PlanIt.Application.Dtos.User;
 using PlanIt.Domain.Entities;
 
@@ -47,7 +48,20 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Update([FromBody] UpdateUserDto updateUserDto, CancellationToken token = default)
     {
-        // TODO update availability
+        var userToUpdate = await _repository.GetFullUserByIdAsync(updateUserDto.Id, token).ConfigureAwait(false);
+        if (userToUpdate is null) return StatusCode(StatusCodes.Status404NotFound);
+
+        if (userToUpdate.Availabilities != null)
+            foreach (var element in updateUserDto.AvailabilitiesToRemove ?? Enumerable.Empty<AvailabilityDto>())
+            {
+                var toRemove = userToUpdate.Availabilities.FirstOrDefault(a => a.Date == element.Date);
+                if (toRemove is not null) userToUpdate.Availabilities.Remove(toRemove);
+            }
+        else
+            userToUpdate.Availabilities = new List<Availability>();
+
+        foreach (var element in updateUserDto.AvailabilitiesToAdd ?? Enumerable.Empty<AvailabilityDto>())
+            userToUpdate.Availabilities.Add(new Availability { Date = element.Date });
 
         return Ok();
     }
