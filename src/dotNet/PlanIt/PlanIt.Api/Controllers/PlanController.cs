@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PlanIt.Application.Contracts.Persistence;
-using PlanIt.Application.Contracts.Services;
 using PlanIt.Application.Dtos.Plan;
+using PlanIt.Domain.Entities;
 
 namespace PlanIt.Api.Controllers;
 
@@ -10,19 +10,17 @@ namespace PlanIt.Api.Controllers;
 public class PlanController : Controller
 {
     private readonly IPlanRepository _repository;
-    private readonly IPlanGenerator _generator;
 
-    public PlanController(IPlanRepository repository, IPlanGenerator generator)
+    public PlanController(IPlanRepository repository)
     {
         _repository = repository;
-        _generator = generator;
     }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<Guid>> Create([FromBody] CreatePlanDto createPlanDto, CancellationToken token = default)
     {
-        var newPlan = _generator.CreatePlan(createPlanDto.FirstSchedulableDate, createPlanDto.LastSchedulableDate);
+        var newPlan = new Plan { FirstSchedulableDate = createPlanDto.FirstSchedulableDate, LastSchedulableDate = createPlanDto.LastSchedulableDate };
         var plan = await _repository.AddAsync(newPlan, token).ConfigureAwait(false);
         return Ok(plan?.Id);
     }
@@ -35,13 +33,32 @@ public class PlanController : Controller
     }
 
     [HttpGet("{id}")]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Read(Guid id, CancellationToken token = default)
     {
         var plan = await _repository.GetByIdAsync(id, token).ConfigureAwait(false);
         if (plan is null) return StatusCode(StatusCodes.Status404NotFound);
         return Ok(plan);
+    }
+
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesDefaultResponseType]
+    public async Task<ActionResult> Update([FromBody] UpdatePlanDto updatePlanDto)
+    {
+        var planToUpdate = await _repository.GetByIdAsync(updatePlanDto.Id).ConfigureAwait(false);
+        if (planToUpdate is null) return StatusCode(StatusCodes.Status404NotFound);
+
+        var user = new User()
+        {
+            Id = new Guid()
+        };
+
+        planToUpdate.Users.Add(user);
+        await _repository.UpdateAsync(planToUpdate).ConfigureAwait(false);
+        return Ok();
     }
 
     [HttpDelete("{id}")]
