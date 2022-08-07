@@ -18,11 +18,11 @@ public class PlanController : Controller
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<Guid>> Create([FromBody] CreatePlanDto createPlanDto, CancellationToken token = default)
+    public async Task<ActionResult> Create([FromBody] CreatePlanDto createPlanDto, CancellationToken token = default)
     {
         var newPlan = new Plan { FirstSchedulableDate = createPlanDto.FirstSchedulableDate, LastSchedulableDate = createPlanDto.LastSchedulableDate };
         var plan = await _repository.AddAsync(newPlan, token).ConfigureAwait(false);
-        return Ok(plan?.Id);
+        return Ok(plan.Id);
     }
 
     [HttpGet]
