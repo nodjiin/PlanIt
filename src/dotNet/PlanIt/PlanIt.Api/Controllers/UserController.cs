@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PlanIt.Application.Contracts.Persistence;
-using PlanIt.Application.Dtos.Availability;
+using PlanIt.Application.Contracts.Services.Factories;
 using PlanIt.Application.Dtos.User;
-using PlanIt.Domain.Entities;
+using PlanIt.Application.Extensions;
 
 namespace PlanIt.Api.Controllers;
 [Route("api/[controller]")]
@@ -10,18 +10,19 @@ namespace PlanIt.Api.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserRepository _repository;
+    private readonly IUserFactory _factory;
 
-    public UserController(IUserRepository repository)
+    public UserController(IUserRepository repository, IUserFactory factory)
     {
         _repository = repository;
+        _factory = factory;
     }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> Create([FromBody] CreateUserDto createUserDto, CancellationToken token = default)
     {
-        var availabilities = createUserDto.Availabilities?.Select(av => new Availability { Date = av.Date }).ToList();
-        var newUser = new User { PlanId = createUserDto.PlanId, Availabilities = availabilities };
+        var newUser = _factory.Create(createUserDto);
         var user = await _repository.AddAsync(newUser, token).ConfigureAwait(false);
         return Ok(user.Id);
     }
@@ -51,18 +52,8 @@ public class UserController : ControllerBase
         var userToUpdate = await _repository.GetFullUserByIdAsync(updateUserDto.Id, token).ConfigureAwait(false);
         if (userToUpdate is null) return StatusCode(StatusCodes.Status404NotFound);
 
-        if (userToUpdate.Availabilities != null)
-            foreach (var element in updateUserDto.AvailabilitiesToRemove ?? Enumerable.Empty<AvailabilityDto>())
-            {
-                var toRemove = userToUpdate.Availabilities.FirstOrDefault(a => a.Date == element.Date);
-                if (toRemove is not null) userToUpdate.Availabilities.Remove(toRemove);
-            }
-        else
-            userToUpdate.Availabilities = new List<Availability>();
-
-        foreach (var element in updateUserDto.AvailabilitiesToAdd ?? Enumerable.Empty<AvailabilityDto>())
-            userToUpdate.Availabilities.Add(new Availability { Date = element.Date });
-
+        userToUpdate.Update(updateUserDto);
+        await _repository.UpdateAsync(userToUpdate, token).ConfigureAwait(false);
         return Ok();
     }
 
