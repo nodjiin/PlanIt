@@ -9,6 +9,7 @@ public static class ApplicationServiceRegistration
     public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IUserFactory, UserFactory>();
+        services.AddScoped<IPlanFactory, PlanFactory>();
         return services;
     }
 }

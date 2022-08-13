@@ -3,5 +3,5 @@ public interface IEntityFactory<TEntity, TDto>
     where TEntity : class
     where TDto : class
 {
-    TEntity Create(TDto entity);
+    TEntity Create(TDto dto);
 }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PlanIt.Application.Contracts.Persistence;
+using PlanIt.Application.Contracts.Services.Factories;
 using PlanIt.Application.Dtos.Plan;
+using PlanIt.Application.Extensions;
 using PlanIt.Domain.Entities;
 
 namespace PlanIt.Api.Controllers;
@@ -10,17 +12,19 @@ namespace PlanIt.Api.Controllers;
 public class PlanController : Controller
 {
     private readonly IPlanRepository _repository;
+    private readonly IPlanFactory _factory;
 
-    public PlanController(IPlanRepository repository)
+    public PlanController(IPlanRepository repository, IPlanFactory factory)
     {
         _repository = repository;
+        _factory = factory;
     }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> Create([FromBody] CreatePlanDto createPlanDto, CancellationToken token = default)
     {
-        var newPlan = new Plan { FirstSchedulableDate = createPlanDto.FirstSchedulableDate, LastSchedulableDate = createPlanDto.LastSchedulableDate };
+        var newPlan = _factory.Create(createPlanDto);
         var plan = await _repository.AddAsync(newPlan, token).ConfigureAwait(false);
         return Ok(plan.Id);
     }
@@ -55,9 +59,7 @@ public class PlanController : Controller
         var planToUpdate = await _repository.GetByIdAsync(updatePlanDto.Id).ConfigureAwait(false);
         if (planToUpdate is null) return StatusCode(StatusCodes.Status404NotFound);
 
-        if (updatePlanDto.UpdateFirstSchedulableDate) planToUpdate.FirstSchedulableDate = updatePlanDto.FirstSchedulableDate;
-        if (updatePlanDto.UpdateLastSchedulableDate) planToUpdate.LastSchedulableDate = updatePlanDto.LastSchedulableDate;
-
+        planToUpdate.Update(updatePlanDto);
         await _repository.UpdateAsync(planToUpdate).ConfigureAwait(false);
         return Ok();
     }
