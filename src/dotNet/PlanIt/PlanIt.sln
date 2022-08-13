@@ -17,11 +17,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{CEA0FE63-A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanIt.Application", "PlanIt.Application\PlanIt.Application.csproj", "{330F8CE7-79D6-4D04-B2E3-99163333C6FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanIt.Persistence", "PlanIt.Persistence\PlanIt.Persistence.csproj", "{5F24A704-3B6A-4C58-9529-69259A4933FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanIt.Persistence", "PlanIt.Persistence\PlanIt.Persistence.csproj", "{5F24A704-3B6A-4C58-9529-69259A4933FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanIt.Api", "PlanIt.Api\PlanIt.Api.csproj", "{F209F687-035C-48A6-A9B9-315E5C00F5E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanIt.Api", "PlanIt.Api\PlanIt.Api.csproj", "{F209F687-035C-48A6-A9B9-315E5C00F5E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanIt.Persistence.Mocked", "PlanIt.Persistence.Mocked\PlanIt.Persistence.Mocked.csproj", "{067915A8-5F8A-42D1-A0C8-9FE7CCCDF36C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanIt.Persistence.Mocked", "PlanIt.Persistence.Mocked\PlanIt.Persistence.Mocked.csproj", "{067915A8-5F8A-42D1-A0C8-9FE7CCCDF36C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanIt.Presentation.WebApp", "PlanIt.Presentation.WebApp\PlanIt.Presentation.WebApp.csproj", "{3DF806A2-D81C-4884-839C-7E431315CABB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +51,10 @@ Global
 		{067915A8-5F8A-42D1-A0C8-9FE7CCCDF36C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{067915A8-5F8A-42D1-A0C8-9FE7CCCDF36C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{067915A8-5F8A-42D1-A0C8-9FE7CCCDF36C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DF806A2-D81C-4884-839C-7E431315CABB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DF806A2-D81C-4884-839C-7E431315CABB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DF806A2-D81C-4884-839C-7E431315CABB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DF806A2-D81C-4884-839C-7E431315CABB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -59,6 +65,7 @@ Global
 		{5F24A704-3B6A-4C58-9529-69259A4933FD} = {6AE16992-2C6F-4CBE-9871-95F45CF0FE59}
 		{F209F687-035C-48A6-A9B9-315E5C00F5E4} = {3086668F-71C7-4378-A21F-E265D34F2D66}
 		{067915A8-5F8A-42D1-A0C8-9FE7CCCDF36C} = {6AE16992-2C6F-4CBE-9871-95F45CF0FE59}
+		{3DF806A2-D81C-4884-839C-7E431315CABB} = {0BCAF796-6C53-4D28-83CA-C121D9EB9349}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {74D67A4A-E94B-41EE-9424-0EA028EBA7DC}
