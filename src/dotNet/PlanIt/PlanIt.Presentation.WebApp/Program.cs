@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
+using PlanIt.Presentation.WebApp.Options;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services
+    .Configure<PlanItBackendApiUrls>(builder.Configuration.GetSection(nameof(PlanItBackendApiUrls)))
+    .AddHttpClient()
     .AddLocalization(options => options.ResourcesPath = "Resources")
     .AddControllersWithViews()
     .AddMvcLocalization(LanguageViewLocationExpanderFormat.Suffix);
