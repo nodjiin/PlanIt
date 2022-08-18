@@ -2,5 +2,5 @@
 public class PlanItBackendApiUrls
 {
     public string ServerUrl { get; set; }
-    public string CreatePlanUrl { get; set; }
+    public string PlanApiUrl { get; set; }
 }

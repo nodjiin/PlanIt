@@ -17,10 +17,10 @@ public class PlanController : Controller
     {
         _factory = factory;
 
-        if (options is null || string.IsNullOrWhiteSpace(options.Value.ServerUrl) || string.IsNullOrWhiteSpace(options.Value.CreatePlanUrl))
+        if (options is null || string.IsNullOrWhiteSpace(options.Value.ServerUrl) || string.IsNullOrWhiteSpace(options.Value.PlanApiUrl))
             throw new ArgumentException($"{nameof(options)} doesn't contain enough information to call the create plan url.");
 
-        _createPlanUrl = options.Value.ServerUrl + options.Value.CreatePlanUrl;
+        _createPlanUrl = options.Value.ServerUrl + options.Value.PlanApiUrl;
         _logger = logger;
     }
 
@@ -46,7 +46,7 @@ public class PlanController : Controller
         };
 
         var client = _factory.CreateClient();
-        var content = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8);
+        var content = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");
 
         Guid newPlanId;
 
@@ -55,10 +55,12 @@ public class PlanController : Controller
             var response = await client.PostAsync(_createPlanUrl, content, token).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
-                // TODO log, error page
+                // TODO error page
+                _logger.LogError($"Failed to create a new plan. Server responded with status code '{response.StatusCode}' and reason '{response.ReasonPhrase}'");
             }
 
-            newPlanId = new Guid(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            newPlanId = new Guid(responseContent.Substring(1, responseContent.Length - 2));
         }
         catch (Exception ex)
         {
