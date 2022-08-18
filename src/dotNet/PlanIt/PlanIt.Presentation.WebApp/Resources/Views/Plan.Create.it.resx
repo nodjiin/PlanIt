@@ -117,16 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Create" xml:space="preserve">
-    <value>Crea un nuovo piano</value>
+  <data name="andSpan" xml:space="preserve">
+    <value>e</value>
   </data>
-  <data name="DateRange" xml:space="preserve">
-    <value>Seleziona un intervallo di date</value>
+  <data name="createButton" xml:space="preserve">
+    <value>Crealo!</value>
   </data>
-  <data name="from" xml:space="preserve">
+  <data name="createH1" xml:space="preserve">
+    <value>Facciamo un nuovo Piano!</value>
+  </data>
+  <data name="fromSpan" xml:space="preserve">
     <value>da</value>
   </data>
-  <data name="to" xml:space="preserve">
+  <data name="selectParagraph" xml:space="preserve">
+    <value>Seleziona le date da includere:</value>
+  </data>
+  <data name="toSpan" xml:space="preserve">
     <value>a</value>
   </data>
 </root>
