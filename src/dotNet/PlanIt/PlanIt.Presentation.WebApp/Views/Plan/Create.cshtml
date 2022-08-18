@@ -1,3 +1,23 @@
 ﻿@inject IViewLocalizer Localizer
+@model PlanModel
 
-@Localizer["DateRange"]
+<div class="container">
+    <form asp-controller="Plan" asp-action="Create" method="post"> 
+        <div class="row">
+            <div class="col">
+                @Localizer["DateRange"]
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                @*TODO maibe change to a daterangepicker?*@
+                @Localizer["from"] <input type="date" asp-for="DateFrom"> @Localizer["to"] <input type="date" asp-for="DateTo">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <button type="submit" class="btn btn-primary">@Localizer["create"]</button>
+            </div>
+        </div>
+    </form>
+</div>
