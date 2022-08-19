@@ -12,8 +12,26 @@
             <span >@Localizer["toSpan"]</span>  <input type="date" asp-for="DateTo">
         </div>
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-            <span class="bold centered-span">@Localizer["andSpan"]</span> <button type="submit" class="btn btn-primary btn-lg px-4 gap-3">@Localizer["createButton"]</button>
+            <span class="bold centered-span">@Localizer["andSpan"]</span> <button id="submitBtn" type="submit" class="btn btn-primary btn-lg px-4 gap-3">@Localizer["createButton"]</button>
         </div>
         </div>
     </form>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function(_) { 
+            const button = document.getElementById("submitBtn");
+            const [from, to] = document.getElementsByTagName("input");
+
+            function enableOrDisableSubmit() {
+                if (from.value > to.value) {
+                    button.disabled = true;
+                } else {
+                    button.disabled = false;
+                }
+            }
+
+            from.addEventListener("change", enableOrDisableSubmit);
+            to.addEventListener("change", enableOrDisableSubmit);
+        });
+    </script>
 </div>
