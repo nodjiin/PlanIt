@@ -68,7 +68,8 @@ public class PlanController : Controller
         return RedirectToAction(nameof(Calendar), new { id = newPlanId });
     }
 
-    [HttpGet("{id}")]
+    [HttpGet]
+    [Route("[controller]/[action]/{id}")]
     public IActionResult Calendar(Guid id)
     {
         return View();
