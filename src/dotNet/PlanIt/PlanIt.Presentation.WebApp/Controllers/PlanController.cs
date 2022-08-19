@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using PlanIt.Application.Dtos.Plan;
+using PlanIt.Domain.Entities;
 using PlanIt.Presentation.WebApp.Models;
 using PlanIt.Presentation.WebApp.Options;
 using System.Text;
@@ -10,7 +11,7 @@ namespace PlanIt.Presentation.WebApp.Controllers;
 public class PlanController : Controller
 {
     private readonly IHttpClientFactory _factory;
-    private readonly string _createPlanUrl;
+    private readonly string _planApiUrl;
     private readonly ILogger<PlanController> _logger;
 
     public PlanController(IHttpClientFactory factory, IOptions<PlanItBackendApiUrls> options, ILogger<PlanController> logger)
@@ -20,7 +21,7 @@ public class PlanController : Controller
         if (options is null || string.IsNullOrWhiteSpace(options.Value.ServerUrl) || string.IsNullOrWhiteSpace(options.Value.PlanApiUrl))
             throw new ArgumentException($"{nameof(options)} doesn't contain enough information to call the create plan url.");
 
-        _createPlanUrl = options.Value.ServerUrl + options.Value.PlanApiUrl;
+        _planApiUrl = options.Value.ServerUrl + options.Value.PlanApiUrl;
         _logger = logger;
     }
 
@@ -49,14 +50,11 @@ public class PlanController : Controller
 
         try
         {
-            var response = await client.PostAsync(_createPlanUrl, content, token).ConfigureAwait(false);
+            var response = await client.PostAsync(_planApiUrl, content, token).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
-            {
-                _logger.LogError($"Failed to create a new plan. Server responded with status code '{response.StatusCode}' and reason '{response.ReasonPhrase}'");
-                throw new InvalidOperationException(); // TODO custom exception
-            }
+                throw new InvalidOperationException($"Failed to create a new plan. Server responded with status code '{response.StatusCode}' and reason '{response.ReasonPhrase}'"); // TODO custom exception
 
-            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var responseContent = await response.Content.ReadAsStringAsync(token).ConfigureAwait(false);
             newPlanId = new Guid(responseContent.Substring(1, responseContent.Length - 2));
         }
         catch (Exception ex)
@@ -70,8 +68,26 @@ public class PlanController : Controller
 
     [HttpGet]
     [Route("[controller]/[action]/{id}")]
-    public IActionResult Calendar(Guid id)
+    public async Task<IActionResult> Calendar(Guid id, CancellationToken token = default)
     {
-        return View();
+        var client = _factory.CreateClient();
+        Plan? plan;
+
+        try
+        {
+            var response = await client.GetAsync($"{_planApiUrl}/{id}", token);
+            if (!response.IsSuccessStatusCode)
+                throw new InvalidOperationException($"Failed to create a new plan. Server responded with status code '{response.StatusCode}' and reason '{response.ReasonPhrase}'"); // TODO custom exception
+
+            plan = await response.Content.ReadFromJsonAsync<Plan>(cancellationToken: token).ConfigureAwait(false);
+            if (plan is null) throw new InvalidOperationException("Value retrieved from server response is null.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Exception raised while trying to retrieve plan {id}");
+            throw;
+        }
+
+        return View(plan);
     }
 }
