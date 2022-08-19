@@ -34,10 +34,7 @@ public class PlanController : Controller
     [HttpPost]
     public async Task<ActionResult> Create(PlanModel model, CancellationToken token = default)
     {
-        if (!ModelState.IsValid)
-        {
-            // TODO error page
-        }
+        if (!ModelState.IsValid) throw new ArgumentException(nameof(model));
 
         var dto = new CreatePlanDto
         {
@@ -55,8 +52,8 @@ public class PlanController : Controller
             var response = await client.PostAsync(_createPlanUrl, content, token).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
-                // TODO error page
                 _logger.LogError($"Failed to create a new plan. Server responded with status code '{response.StatusCode}' and reason '{response.ReasonPhrase}'");
+                throw new InvalidOperationException(); // TODO custom exception
             }
 
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -64,9 +61,8 @@ public class PlanController : Controller
         }
         catch (Exception ex)
         {
-            // TODO error page
             _logger.LogError(ex, $"Exception raised while trying to create a new plan in interval {dto.FirstSchedulableDate} - {dto.LastSchedulableDate}");
-            return RedirectToAction(nameof(Create));
+            throw;
         }
 
         return RedirectToAction(nameof(Calendar), new { id = newPlanId });
