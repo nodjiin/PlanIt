@@ -1,7 +1,55 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@using PlanIt.Domain.Entities
+@model PlanIt.Domain.Entities.Plan
 
-Placeholder for calendar page
+<!-- Modal -->
+<div id="modal" class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Who are you?</h5>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group">
+          @foreach (var user in @Model.Users ?? Enumerable.Empty<User>())
+          {
+            <a class="list-group-item list-group-item-action" data-user-id="@user.Id">@user.Name</a>
+          }
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Insert your name!" aria-label="Insert your name!"
+            aria-describedby="button-addon">
+          <button class="btn btn-outline-secondary" type="button" id="button-addon" data-bs-dismiss="modal">Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+@section Scripts
+{
+<script>
+  let currentEvent;
+  document.ready(function () {
+    let currentUser;
+    const modal = new bootstrap.Modal(document.getElementById("modal"), {
+      keyboard: false,
+      focus: true
+    })
+
+    const userListItems = document.getElementsByClassName("list-group-item");
+    for (i = 0; i < userListItems.length; i++) {
+      userListItems[i].addEventListener("click", function (event) {
+        currentUser = event.target.attributes["data-user-id"];
+        modal.hide();
+      });
+    }
+
+    modal.show();
+  });
+</script>
+}
