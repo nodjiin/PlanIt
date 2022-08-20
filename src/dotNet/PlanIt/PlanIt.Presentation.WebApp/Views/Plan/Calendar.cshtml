@@ -1,8 +1,8 @@
 ﻿@using PlanIt.Domain.Entities
 @model PlanIt.Domain.Entities.Plan
 
-<!-- Modal -->
-<div id="modal" class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+@* User modal *@
+<div id="modal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
   aria-labelledby="staticBackdropLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -29,6 +29,66 @@
   </div>
 </div>
 
+@* Calendar *@
+<div class="container" style="width: 20rem">
+  <div class="row">
+    <div class="col"></div>
+    <div class="col-auto">
+      <a>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left"
+          viewBox="0 0 16 16">
+          <path fill-rule="evenodd"
+            d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+        </svg>
+      </a>
+    </div>
+    <div class="col-auto">
+      <p class="lead">Month</p>
+    </div>
+    <div class="col-auto">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right"
+        viewBox="0 0 16 16">
+        <path fill-rule="evenodd"
+          d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
+      </svg>
+    </div>
+    <div class="col"></div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <strong>Mo</strong>
+    </div>
+    <div class="col">
+      <strong>Tu</strong>
+    </div>
+    <div class="col">
+      <strong>We</strong>
+    </div>
+    <div class="col">
+      <strong>Th</strong>
+    </div>
+    <div class="col">
+      <strong>Fr</strong>
+    </div>
+    <div class="col">
+      <strong>Sa</strong>
+    </div>
+    <div class="col">
+      <strong>Su</strong>
+    </div>
+  </div>
+  @for (int row = 0; row < 5; row++)
+  {
+    <div class="row">
+      @for (int col = 0; col < 7; col++)
+      {
+        <div id="@(col + row*7)" class="col text-center">
+          -
+        </div>
+      }
+    </div>
+  }
+</div>
 
 @section Scripts
 {
