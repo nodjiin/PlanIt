@@ -15,9 +15,12 @@
         </div>
         </div>
     </form>
+</div>
 
+@section Scripts
+{
     <script>
-        document.addEventListener("DOMContentLoaded", function(_) { 
+        document.addEventListener("DOMContentLoaded", function() { 
             const button = document.getElementById("submitBtn");
             const [from, to] = document.getElementsByTagName("input");
 
@@ -33,4 +36,4 @@
             to.addEventListener("change", enableOrDisableSubmit);
         });
     </script>
-</div>
+}
