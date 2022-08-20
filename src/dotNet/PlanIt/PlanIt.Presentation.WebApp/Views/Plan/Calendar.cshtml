@@ -10,18 +10,19 @@
         <h5 class="modal-title" id="staticBackdropLabel">Who are you?</h5>
       </div>
       <div class="modal-body">
-        <div  class="list-group">
+        <div class="list-group">
           @foreach (var user in @Model.Users ?? Enumerable.Empty<User>())
           {
-            <a class="list-group-item list-group-item-action" data-user-id="@user.Id">@user.Name</a>
+            <a class="list-group-item list-group-item-action" data-user-id="@user.Id"
+            data-bs-dismiss="modal">@user.Name</a>
           }
         </div>
       </div>
       <div class="modal-footer">
         <div class="input-group mb-3">
-          <input type="text" class="form-control" placeholder="Insert your name!" aria-label="Insert your name!"
-            aria-describedby="button-addon">
-          <button class="btn btn-outline-secondary" type="button" id="button-addon" data-bs-dismiss="modal">Add</button>
+          <input id="newUsernameInput" type="text" class="form-control" placeholder="Insert your name!"
+            aria-label="Insert your name!" aria-describedby="addButton">
+          <button class="btn btn-outline-secondary" type="button" id="addButton" data-bs-dismiss="modal">Add</button>
         </div>
       </div>
     </div>
@@ -29,11 +30,9 @@
 </div>
 
 
-
 @section Scripts
 {
 <script>
-  let currentEvent;
   document.ready(function () {
     let currentUser;
     const modal = new bootstrap.Modal(document.getElementById("modal"), {
@@ -45,8 +44,22 @@
     for (i = 0; i < userListItems.length; i++) {
       userListItems[i].addEventListener("click", function (event) {
         currentUser = event.target.attributes["data-user-id"];
-        modal.hide();
+        fillCalendar(false);
       });
+    }
+
+    const newUsernameInput = document.getElementById("newUsernameInput");
+    const addButton = document.getElementById("addButton");
+    addButton.addEventListener("click", function (event) {
+      currentUser = newUsernameInput.value;
+      fillCalendar(true);
+    })
+
+    function fillCalendar(isNewUser) {
+      //TODO 
+      // create calendar (maibe implent a js class?)
+      // fill calendar with all the availabilities
+      // fill calendar with free days selected by the user (if not new)
     }
 
     modal.show();
