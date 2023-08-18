@@ -1,128 +1,122 @@
 ﻿@using PlanIt.Domain.Entities
 @model PlanIt.Domain.Entities.Plan
 
+@*TODO move*@
+<style>
+    .monthSelectorArrow:hover {
+        opacity: 0.5;
+    }
+</style>
+
 @* User modal *@
 <div id="modal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-  aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Who are you?</h5>
-      </div>
-      <div class="modal-body">
-        <div class="list-group">
-          @foreach (var user in @Model.Users ?? Enumerable.Empty<User>())
-          {
-            <a class="list-group-item list-group-item-action" data-user-id="@user.Id"
-            data-bs-dismiss="modal">@user.Name</a>
-          }
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Who are you?</h5>
+            </div>
+            <div class="modal-body">
+                <div class="list-group">
+                    @foreach (var user in @Model.Users ?? Enumerable.Empty<User>())
+                    {
+                        <a class="list-group-item list-group-item-action" data-user-id="@user.Id"
+                           data-bs-dismiss="modal">@user.Name</a>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="input-group mb-3">
+                    <input id="newUsernameInput" type="text" class="form-control" placeholder="Insert your name!"
+                           aria-label="Insert your name!" aria-describedby="addButton">
+                    <button class="btn btn-outline-secondary" type="button" id="addButton" data-bs-dismiss="modal">Add</button>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="modal-footer">
-        <div class="input-group mb-3">
-          <input id="newUsernameInput" type="text" class="form-control" placeholder="Insert your name!"
-            aria-label="Insert your name!" aria-describedby="addButton">
-          <button class="btn btn-outline-secondary" type="button" id="addButton" data-bs-dismiss="modal">Add</button>
-        </div>
-      </div>
     </div>
-  </div>
 </div>
 
 @* Calendar *@
 <div class="container" style="width: 20rem">
-  <div class="row">
-    <div class="col"></div>
-    <div class="col-auto">
-      <a>
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left"
-          viewBox="0 0 16 16">
-          <path fill-rule="evenodd"
-            d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
-        </svg>
-      </a>
-    </div>
-    <div class="col-auto">
-      <p class="lead">Month</p>
-    </div>
-    <div class="col-auto">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right"
-        viewBox="0 0 16 16">
-        <path fill-rule="evenodd"
-          d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
-      </svg>
-    </div>
-    <div class="col"></div>
-  </div>
-  <div class="row">
-    <div class="col">
-      <strong>Mo</strong>
-    </div>
-    <div class="col">
-      <strong>Tu</strong>
-    </div>
-    <div class="col">
-      <strong>We</strong>
-    </div>
-    <div class="col">
-      <strong>Th</strong>
-    </div>
-    <div class="col">
-      <strong>Fr</strong>
-    </div>
-    <div class="col">
-      <strong>Sa</strong>
-    </div>
-    <div class="col">
-      <strong>Su</strong>
-    </div>
-  </div>
-  @for (int row = 0; row < 5; row++)
-  {
     <div class="row">
-      @for (int col = 0; col < 7; col++)
-      {
-        <div id="@(col + row*7)" class="col text-center">
-          -
+        <div class="col"></div>
+        <div class="col-auto">
+            <div id="prevMonthArr" class="monthSelectorArrow">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left"
+                     viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                          d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+                </svg>
+            </div>
         </div>
-      }
+        <div class="col-6 text-center">
+            <p id="monthp" class="lead"></p>
+        </div>
+        <div class="col-auto">
+            <div id="nextMonthArr" class="monthSelectorArrow">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right"
+                     viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                          d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
+                </svg>
+            </div>
+        </div>
+        <div class="col"></div>
     </div>
-  }
+    <div class="row">
+        <div class="col">
+            <strong>Mo</strong>
+        </div>
+        <div class="col">
+            <strong>Tu</strong>
+        </div>
+        <div class="col">
+            <strong>We</strong>
+        </div>
+        <div class="col">
+            <strong>Th</strong>
+        </div>
+        <div class="col">
+            <strong>Fr</strong>
+        </div>
+        <div class="col">
+            <strong>Sa</strong>
+        </div>
+        <div class="col">
+            <strong>Su</strong>
+        </div>
+    </div>
+    @for (int row = 0; row < 5; row++)
+    {
+        <div class="row">
+            @for (int col = 0; col < 7; col++)
+            {
+                <div id="@(col + row*7)" class="col text-center">
+                    -
+                </div>
+            }
+        </div>
+    }
 </div>
 
 @section Scripts
-{
-<script>
-  document.ready(function () {
-    let currentUser;
-    const modal = new bootstrap.Modal(document.getElementById("modal"), {
-      keyboard: false,
-      focus: true
-    })
+    {
+    <script src="~/js/calendar.js" type="module"> </script>
+    <script type="module">
+        import { getUIElements, hookUpInteractionHandlers, run } from "../../js/calendar.js"
 
-    const userListItems = document.getElementsByClassName("list-group-item");
-    for (i = 0; i < userListItems.length; i++) {
-      userListItems[i].addEventListener("click", function (event) {
-        currentUser = event.target.attributes["data-user-id"];
-        fillCalendar(false);
-      });
-    }
+        document.ready(function () {
+            // server-side data
+            const months = ["@Localizer["err"]", "@Localizer["jan"]", "@Localizer["feb"]",
+                "@Localizer["mar"]", "@Localizer["apr"]", "@Localizer["may"]", "@Localizer["jun"]",
+                "@Localizer["jul"]", "@Localizer["aug"]", "@Localizer["sep"]", "@Localizer["oct"]",
+                "@Localizer["nov"]", "@Localizer["dec"]"];
+            const minMonth = @Model.FirstSchedulableDate.Month;
+            const maxMonth = @Model.LastSchedulableDate.Month;
 
-    const newUsernameInput = document.getElementById("newUsernameInput");
-    const addButton = document.getElementById("addButton");
-    addButton.addEventListener("click", function (event) {
-      currentUser = newUsernameInput.value;
-      fillCalendar(true);
-    })
-
-    function fillCalendar(isNewUser) {
-      //TODO 
-      // create calendar (maibe implent a js class?)
-      // fill calendar with all the availabilities
-      // fill calendar with free days selected by the user (if not new)
-    }
-
-    modal.show();
-  });
-</script>
+            getUIElements();
+            hookUpInteractionHandlers();
+            run(months, minMonth, maxMonth);
+        });
+    </script>
 }

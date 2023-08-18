@@ -1,5 +1,9 @@
 ﻿"use strict";
 document.ready = function ready(callback) {
+    if (callback === null || typeof callback !== "function") {
+        return;
+    }
+
     // in case the document is already rendered
     if (document.readyState != 'loading') callback();
     // modern browsers
