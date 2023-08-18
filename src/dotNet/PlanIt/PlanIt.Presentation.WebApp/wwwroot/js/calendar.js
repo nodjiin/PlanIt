@@ -10,7 +10,7 @@ let nextMonthArr;
 // view data
 let currentUser;
 let currentMonth;
-let dateElements;
+let dateElements; // TODO I need to create multiple set of elements, based on the month
 let fdMonth;
 
 // server side data
@@ -19,6 +19,7 @@ let minMonth;
 let maxMonth;
 
 // single date status
+// TODO status for availability of other users
 const busy = 0;
 const available = 1;
 const disabled = 2;
@@ -26,17 +27,21 @@ const disabled = 2;
 class DateElement {
     #status = busy;
     #element;
+    #date;
     constructor(de) {
         this.#element = de;
+        this.#element.addEventListener("click", (w) => this.#handleClick(w));
     }
-    // TODO css classes
     updateStatus(s) {
         switch (s) {
             case busy:
+                this.#element.className = "col text-center cursor-pointer"
                 break;
             case available:
+                this.#element.className = "col text-center cursor-pointer text-white bg-success"
                 break;
             case disabled:
+                this.#element.className = "col text-center text-secondary"
                 break;
             default:
                 console.log("Unknown status", s);
@@ -46,6 +51,19 @@ class DateElement {
     }
     updateDayValue(v) {
         this.#element.innerText = v;
+    }
+    #handleClick(event) {
+        if (this.#status === disabled) {
+            return;
+        }
+
+        if (this.#status === busy) {
+            this.updateStatus(available)
+        } else if (this.#status === available) {
+            this.updateStatus(busy)
+        } else {
+            console.warn("Unexpected status value '%d'", this.#status);
+        }
     }
 }
 
