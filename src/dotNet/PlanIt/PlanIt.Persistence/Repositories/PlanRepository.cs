@@ -13,6 +13,7 @@ public class PlanRepository : BaseRepository<Plan>, IPlanRepository
     {
         if (DbContext.Plans is null) return null;
 
+        // TODO check if this causes an N+1 problem
         return await DbContext.Plans.Include(p => p.Users)
             .ThenInclude(u => u.Availabilities)
             .SingleOrDefaultAsync(p => p.Id == id, token)

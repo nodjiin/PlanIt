@@ -91,7 +91,7 @@
         <div class="row">
             @for (int col = 0; col < 7; col++)
             {
-                <div id="@(col + row*7)" class="col text-center">
+                <div id="de_@(col + row*7)" class="col text-center">
                     -
                 </div>
             }
@@ -113,10 +113,11 @@
                 "@Localizer["nov"]", "@Localizer["dec"]"];
             const minMonth = @Model.FirstSchedulableDate.Month;
             const maxMonth = @Model.LastSchedulableDate.Month;
-
+            const firstDayOfTheMonth = new Date("@Model.FirstSchedulableDate.Date.ToString("yyyy-MM-dd")");
+            firstDayOfTheMonth.setDate(1);
             getUIElements();
             hookUpInteractionHandlers();
-            run(months, minMonth, maxMonth);
+            run(months, minMonth, maxMonth, firstDayOfTheMonth);
         });
     </script>
 }
