@@ -27,7 +27,6 @@ const disabled = 2;
 const outOfRange = 3;
 
 // apiUrls
-
 let userApiUrl;
 
 class DateElement {
@@ -305,14 +304,16 @@ export function setApiUrls(user) {
     userApiUrl = user;
 }
 
-//  TODO check UTC date
-export function run(sMonths, sMinDate, sMaxDate, firstDayOfTheMonth, splanId) {
+export function setServerdata(sMonths, sMinDate, sMaxDate, firstDayOfTheMonth, splanId) {
     months = sMonths;
     minDate = sMinDate;
     maxDate = sMaxDate;
     fdMonth = firstDayOfTheMonth;
     planId = splanId;
+}
 
+//  TODO check UTC date
+export function run() {
     // set current month and update arrow display
     updateMonth(fdMonth, fdMonth);
     prevMonthArr.style.display = "none";
