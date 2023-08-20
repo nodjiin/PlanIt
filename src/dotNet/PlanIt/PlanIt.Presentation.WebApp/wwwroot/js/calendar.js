@@ -10,15 +10,14 @@ let nextMonthArr;
 
 // view data
 let currentUser;
-let currentMonth;
 let dateElements;
 let statusCache = new Map();
 let fdMonth;
 
 // server side data
 let months;
-let minMonth;
-let maxMonth;
+let minDate;
+let maxDate;
 let planId;
 
 // single date status
@@ -83,22 +82,26 @@ function handleNewUserClick() {
 }
 
 function handlePrevMonthArrowClick() {
-    if (currentMonth <= minMonth) {
+    if (compYearsMonths(fdMonth, minDate) <= 0) {
         return;
     }
-    updateMonth(currentMonth, --currentMonth);
-    if (currentMonth === minMonth) {
+    const newDate = new Date(fdMonth);
+    newDate.setMonth(newDate.getMonth() - 1);
+    updateMonth(fdMonth, newDate);
+    if (compYearsMonths(fdMonth, minDate) <= 0) {
         prevMonthArr.style.display = "none";
     }
     nextMonthArr.style.display = "";
 }
 
 function handleNextMonthArrowClick() {
-    if (currentMonth >= maxMonth) {
+    if (compYearsMonths(fdMonth, maxDate) >= 0) {
         return;
     }
-    updateMonth(currentMonth, ++currentMonth);
-    if (currentMonth === maxMonth) {
+    const newDate = new Date(fdMonth);
+    newDate.setMonth(newDate.getMonth() + 1);
+    updateMonth(fdMonth, newDate);
+    if (compYearsMonths(fdMonth, maxDate) >= 0) {
         nextMonthArr.style.display = "none";
     }
 
@@ -112,10 +115,12 @@ function createUserAvailabilityDto() {
         Availabilities: []
     }
 
-    for (i = minMonth; i < maxMonth; i++) {
-        if (i == currentMonth) {
+    const firstDay = new Date(minDate);
+    firstDay.SetDate(1);
+    for (i = firstDay; compYearsMonths(i, maxDate) < 0; i.setMonth(i.getMonth() + 1)) {
+        if (compYearsMonths(i, fdMonth) == 0) {
             // get live data
-        } else if (statusCache.has(i)) {
+        } else if (statusCache.has(i)) { // TODO update 
             // get data from cache
         }
     }
@@ -161,26 +166,30 @@ function getDaysInMonth(currentMonth) {
     return currentDate.getDate();
 }
 
-function updateMonth(oldMonth, newMonth) {
-    if (!Number.isInteger(newMonth) && newMonth > 0 && newMonth <= 12) {
-        console.error("Invalid month number value: ", newMonth)
-        newMonth = 0;
+function updateCache(key) {
+    const statusesToCache = [35]
+    for (let i = 0; i < 35; i++) {
+        statusesToCache[i] = dateElements[i].getStatus();
     }
-    monthp.innerText = months[newMonth]
-    if (oldMonth !== currentMonth) {
-        const statusesToCache = [35]
-        for (let i = 0; i < 35; i++) {
-            statusesToCache[i] = dateElements[i].getStatus();
-        }
-        statusCache.set(oldMonth, statusesToCache);
-    }
-    let cachedStatuses;
-    if (statusCache.has(newMonth)) {
-        cachedStatuses = statusCache.get(newMonth);
+    statusCache.set(key, statusesToCache);
+}
+
+function getCachedStatuses(key) {
+    if (statusCache.has(key)) {
+        return statusCache.get(key);
     }
 
+    return null;
+}
+
+function updateMonth(oldMonth, newMonth) {
+    monthp.innerText = months[newMonth.getMonth() + 1]
+    if (oldMonth !== newMonth) {
+        updateCache(oldMonth.getTime());
+    }
+    const cachedStatuses = getCachedStatuses(newMonth.getTime()); 
     // update the date elements based on the first date of the month 
-    const currentJsMonth = newMonth - 1;
+    const currentJsMonth = newMonth.getMonth();
     fdMonth.setMonth(currentJsMonth);
     let firstDayOfWeek = fdMonth.getDay();
     if (firstDayOfWeek === 0) {
@@ -191,39 +200,34 @@ function updateMonth(oldMonth, newMonth) {
 
     let dayIndex = 0;
     let el;
-    // TODO extract repetition
     while (dayIndex < firstDayOfWeek) {
         el = dateElements[dayIndex];
-
-        if (cachedStatuses !== undefined) {
-            el.updateStatus(cachedStatuses[dayIndex]);
-        } else {
-            el.updateStatus(disabled);
-        }
+        el.updateStatus(disabled);
         el.updateDayValue("-");
         dayIndex++;
     }
 
     let lastValidDate = dayIndex + getDaysInMonth(currentJsMonth);
-    let dayValue = 1;
+    const currDate = new Date(fdMonth);
     while (dayIndex < lastValidDate) {
         el = dateElements[dayIndex];
-        if (cachedStatuses !== undefined) {
+        if (cachedStatuses !== null) {
             el.updateStatus(cachedStatuses[dayIndex]);
         } else {
-            el.updateStatus(busy);
+            if (currDate >= minDate && currDate <= maxDate) {
+                el.updateStatus(busy);
+            } else {
+                el.updateStatus(disabled);
+            }
         }
-        el.updateDayValue(dayValue++);
+        el.updateDayValue(currDate.getDate());
+        currDate.setDate(currDate.getDate() + 1);
         dayIndex++;
     }
 
     while (dayIndex < 35) {
         el = dateElements[dayIndex];
-        if (cachedStatuses !== undefined) {
-            el.updateStatus(cachedStatuses[dayIndex]);
-        } else {
-            el.updateStatus(disabled);
-        }
+        el.updateStatus(disabled);
         el.updateDayValue("-");
         dayIndex++;
     }
@@ -255,18 +259,27 @@ export function hookUpInteractionHandlers() {
     saveButton.addEventListener("click", handleSaveButtonClick);
 }
 
-export function run(sMonths, sMinMonth, sMaxMonth, firstDayOfTheMonth, splanId) {
+function compYearsMonths(a, b) {
+    const yearComp = a.getFullYear() - b.getFullYear();
+    if (yearComp !== 0) {
+        return yearComp;
+    }
+
+    return a.getMonth() - b.getMonth();
+}
+
+//  TODO check UTC date
+export function run(sMonths, sMinDate, sMaxDate, firstDayOfTheMonth, splanId) {
     months = sMonths;
-    minMonth = sMinMonth;
-    currentMonth = minMonth;
-    maxMonth = sMaxMonth;
+    minDate = sMinDate;
+    maxDate = sMaxDate;
     fdMonth = firstDayOfTheMonth;
     planId = splanId;
 
     // set current month and update arrow display
-    updateMonth(currentMonth, currentMonth);
+    updateMonth(fdMonth, fdMonth);
     prevMonthArr.style.display = "none";
-    if (currentMonth === maxMonth) {
+    if (compYearsMonths(fdMonth, maxDate) === 0) {
         nextMonthArr.style.display = "none";
     }
 

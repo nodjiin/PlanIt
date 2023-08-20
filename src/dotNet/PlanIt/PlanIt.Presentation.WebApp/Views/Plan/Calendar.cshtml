@@ -120,13 +120,13 @@
                 "@Localizer["mar"]", "@Localizer["apr"]", "@Localizer["may"]", "@Localizer["jun"]",
                 "@Localizer["jul"]", "@Localizer["aug"]", "@Localizer["sep"]", "@Localizer["oct"]",
                 "@Localizer["nov"]", "@Localizer["dec"]"];
-            const minMonth = @Model.FirstSchedulableDate.Month;
-            const maxMonth = @Model.LastSchedulableDate.Month;
-            const firstDayOfTheMonth = new Date("@Model.FirstSchedulableDate.Date.ToString("yyyy-MM-dd")");
+            const minDate = new Date("@Model.FirstSchedulableDate.Date.ToString("yyyy-MM-dd")");
+            const maxDate = new Date("@Model.LastSchedulableDate.Date.ToString("yyyy-MM-dd")");
+            const firstDayOfTheMonth = new Date(minDate);
             firstDayOfTheMonth.setDate(1);
             getUIElements();
             hookUpInteractionHandlers();
-            run(months, minMonth, maxMonth, firstDayOfTheMonth, "@Model.Id");
+            run(months, minDate, maxDate, firstDayOfTheMonth, "@Model.Id");
         });
     </script>
 }
