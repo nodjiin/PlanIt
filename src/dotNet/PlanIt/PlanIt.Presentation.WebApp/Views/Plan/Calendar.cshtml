@@ -1,5 +1,8 @@
-﻿@using PlanIt.Domain.Entities
+﻿@using Microsoft.Extensions.Options;
+@using PlanIt.Domain.Entities
+@using PlanIt.Presentation.WebApp.Options;
 @model PlanIt.Domain.Entities.Plan
+@inject IOptions<PlanItBackendApiUrls> options;
 
 @*TODO move*@
 <style>
@@ -108,11 +111,16 @@
     <button id="saveBtn" type="button" class="btn btn-primary">@Localizer["saveBtn"]</button>
 </div>
 
+@{
+    var config = options.Value;
+    var userApi = config.ServerUrl + config.UserApiUrl;
+}
+
 @section Scripts
     {
     <script src="~/js/calendar.js" type="module"> </script>
     <script type="module">
-        import { getUIElements, hookUpInteractionHandlers, run } from "../../js/calendar.js"
+        import { getUIElements, hookUpInteractionHandlers, setApiUrls, run } from "../../js/calendar.js"
 
         document.ready(function () {
             // server-side data
@@ -126,6 +134,7 @@
             firstDayOfTheMonth.setDate(1);
             getUIElements();
             hookUpInteractionHandlers();
+            setApiUrls("@userApi");     
             run(months, minDate, maxDate, firstDayOfTheMonth, "@Model.Id");
         });
     </script>

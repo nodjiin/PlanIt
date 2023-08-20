@@ -24,6 +24,11 @@ let planId;
 const busy = 0;
 const available = 1;
 const disabled = 2;
+const outOfRange = 3;
+
+// apiUrls
+
+let userApiUrl;
 
 class DateElement {
     #status = busy;
@@ -46,6 +51,10 @@ class DateElement {
             case disabled:
                 this.#element.className = "col text-center text-secondary"
                 break;
+            case outOfRange:
+                this.#element.className = "col text-center text-secondary"
+                this.#element.innerText = "-"
+                break;
             default:
                 console.log("Unknown status", s);
                 return;
@@ -56,7 +65,7 @@ class DateElement {
         this.#element.innerText = v;
     }
     #handleClick(event) {
-        if (this.#status === disabled) {
+        if (this.#status === disabled || this.#status === outOfRange) {
             return;
         }
 
@@ -108,6 +117,23 @@ function handleNextMonthArrowClick() {
     prevMonthArr.style.display = "";
 }
 
+function fillAvailabilities(user, statuses, month) {
+    let day = new Date(month);
+    let index = 0;
+
+    while (statuses[index] === outOfRange && index < 35) {
+        index++; 
+    }
+
+    while (statuses[index] !== outOfRange && index < 35) {
+        if (statuses[index] === available) {
+            user.Availabilities.push({ date: day });
+        }
+        index++;
+        day.setDate(day.getDate() + 1);
+    }
+}
+
 function createUserAvailabilityDto() {
     const user = {
         Name: currentUser,
@@ -116,22 +142,29 @@ function createUserAvailabilityDto() {
     }
 
     const firstDay = new Date(minDate);
-    firstDay.SetDate(1);
-    for (i = firstDay; compYearsMonths(i, maxDate) < 0; i.setMonth(i.getMonth() + 1)) {
-        if (compYearsMonths(i, fdMonth) == 0) {
+    firstDay.setDate(1);
+    for (let month = firstDay; compYearsMonths(month, maxDate) < 0; month.setMonth(month.getMonth() + 1)) {
+        if (compYearsMonths(month, fdMonth) == 0) {
             // get live data
-        } else if (statusCache.has(i)) { // TODO update 
-            // get data from cache
+            // allocating the new array here is kinda wasteful, but the size is really small so whatever.
+            fillAvailabilities(user, dateElements.map(el => el.getStatus()), month);
+        }
+
+        // get data from cache
+        const cached = getCachedStatuses(month.getTime());
+        if (cached != null) {
+            fillAvailabilities(user, cached, month)
         }
     }
 
+    return user;
 }
 
 async function handleSaveButtonClick() {
     const data = createUserAvailabilityDto();
 
     try {
-        const res = await fetch("http://localhost:3000/api/user", {
+        const res = await fetch(userApiUrl, {
             method: "post",
             headers: {
                 'Content-Type': 'application/json',
@@ -142,6 +175,8 @@ async function handleSaveButtonClick() {
         if (!res.ok) {
             // TODO log & notify
         }
+
+        // TODO redirect to plan page
     } catch (err) {
         // TODO notify failed save
         console.error(err);
@@ -187,7 +222,7 @@ function updateMonth(oldMonth, newMonth) {
     if (oldMonth !== newMonth) {
         updateCache(oldMonth.getTime());
     }
-    const cachedStatuses = getCachedStatuses(newMonth.getTime()); 
+    const cachedStatuses = getCachedStatuses(newMonth.getTime());
     // update the date elements based on the first date of the month 
     const currentJsMonth = newMonth.getMonth();
     fdMonth.setMonth(currentJsMonth);
@@ -202,8 +237,7 @@ function updateMonth(oldMonth, newMonth) {
     let el;
     while (dayIndex < firstDayOfWeek) {
         el = dateElements[dayIndex];
-        el.updateStatus(disabled);
-        el.updateDayValue("-");
+        el.updateStatus(outOfRange);
         dayIndex++;
     }
 
@@ -227,8 +261,7 @@ function updateMonth(oldMonth, newMonth) {
 
     while (dayIndex < 35) {
         el = dateElements[dayIndex];
-        el.updateStatus(disabled);
-        el.updateDayValue("-");
+        el.updateStatus(outOfRange);
         dayIndex++;
     }
 }
@@ -266,6 +299,10 @@ function compYearsMonths(a, b) {
     }
 
     return a.getMonth() - b.getMonth();
+}
+
+export function setApiUrls(user) {
+    userApiUrl = user;
 }
 
 //  TODO check UTC date

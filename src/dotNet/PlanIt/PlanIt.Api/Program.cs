@@ -2,6 +2,8 @@ using PlanIt.Application;
 using PlanIt.Persistence;
 using PlanIt.Persistence.Mocked;
 
+const string CPolicy = "CORSPOLICY";
+
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
@@ -14,6 +16,14 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: CPolicy,
+                      policy =>
+                      {
+                          policy.WithOrigins("*").AllowAnyHeader().AllowAnyMethod();
+                      });
+});
 
 var app = builder.Build();
 
@@ -25,7 +35,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors(CPolicy);
 app.UseAuthorization();
 
 app.MapControllers();

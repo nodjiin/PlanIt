@@ -3,4 +3,5 @@ public class PlanItBackendApiUrls
 {
     public string? ServerUrl { get; set; }
     public string? PlanApiUrl { get; set; }
+    public string? UserApiUrl { get; set; }
 }
