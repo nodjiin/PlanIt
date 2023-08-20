@@ -153,6 +153,12 @@
   <data name="oct" xml:space="preserve">
     <value>ottobre</value>
   </data>
+  <data name="saveBtn" xml:space="preserve">
+    <value>Salvale!</value>
+  </data>
+  <data name="saveSpan" xml:space="preserve">
+    <value>Seleziona le tue disponibilità e</value>
+  </data>
   <data name="sep" xml:space="preserve">
     <value>settembre</value>
   </data>

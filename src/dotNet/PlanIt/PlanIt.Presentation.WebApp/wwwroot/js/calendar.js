@@ -3,6 +3,7 @@ let modal;
 let userListItems;
 let newUsernameInput;
 let addButton;
+let saveButton;
 let monthp;
 let prevMonthArr;
 let nextMonthArr;
@@ -10,7 +11,7 @@ let nextMonthArr;
 // view data
 let currentUser;
 let currentMonth;
-let dateElements; 
+let dateElements;
 let statusCache = new Map();
 let fdMonth;
 
@@ -18,9 +19,9 @@ let fdMonth;
 let months;
 let minMonth;
 let maxMonth;
+let planId;
 
 // single date status
-// TODO status for availability of other users
 const busy = 0;
 const available = 1;
 const disabled = 2;
@@ -28,7 +29,6 @@ const disabled = 2;
 class DateElement {
     #status = busy;
     #element;
-    #date;
     constructor(de) {
         this.#element = de;
         this.#element.addEventListener("click", (w) => this.#handleClick(w));
@@ -105,6 +105,44 @@ function handleNextMonthArrowClick() {
     prevMonthArr.style.display = "";
 }
 
+function createUserAvailabilityDto() {
+    const user = {
+        Name: currentUser,
+        PlanId: planId,
+        Availabilities: []
+    }
+
+    for (i = minMonth; i < maxMonth; i++) {
+        if (i == currentMonth) {
+            // get live data
+        } else if (statusCache.has(i)) {
+            // get data from cache
+        }
+    }
+
+}
+
+async function handleSaveButtonClick() {
+    const data = createUserAvailabilityDto();
+
+    try {
+        const res = await fetch("http://localhost:3000/api/user", {
+            method: "post",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (!res.ok) {
+            // TODO log & notify
+        }
+    } catch (err) {
+        // TODO notify failed save
+        console.error(err);
+    }
+}
+
 function fillCalendar(isNewUser) {
     // TODO
     // create calendar 
@@ -130,7 +168,6 @@ function updateMonth(oldMonth, newMonth) {
     }
     monthp.innerText = months[newMonth]
     if (oldMonth !== currentMonth) {
-        // TODO save old status
         const statusesToCache = [35]
         for (let i = 0; i < 35; i++) {
             statusesToCache[i] = dateElements[i].getStatus();
@@ -197,6 +234,7 @@ export function getUIElements() {
     userListItems = document.getElementsByClassName("list-group-item");
     newUsernameInput = document.getElementById("newUsernameInput");
     addButton = document.getElementById("addButton");
+    saveButton = document.getElementById("saveBtn");
     monthp = document.getElementById("monthp");
     prevMonthArr = document.getElementById("prevMonthArr");
     nextMonthArr = document.getElementById("nextMonthArr");
@@ -214,14 +252,16 @@ export function hookUpInteractionHandlers() {
     addButton.addEventListener("click", handleNewUserClick);
     prevMonthArr.addEventListener("click", handlePrevMonthArrowClick);
     nextMonthArr.addEventListener("click", handleNextMonthArrowClick);
+    saveButton.addEventListener("click", handleSaveButtonClick);
 }
 
-export function run(sMonths, sMinMonth, sMaxMonth, firstDayOfTheMonth) {
+export function run(sMonths, sMinMonth, sMaxMonth, firstDayOfTheMonth, splanId) {
     months = sMonths;
     minMonth = sMinMonth;
     currentMonth = minMonth;
     maxMonth = sMaxMonth;
     fdMonth = firstDayOfTheMonth;
+    planId = splanId;
 
     // set current month and update arrow display
     updateMonth(currentMonth, currentMonth);

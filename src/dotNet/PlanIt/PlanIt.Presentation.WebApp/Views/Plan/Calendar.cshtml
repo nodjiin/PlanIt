@@ -103,6 +103,11 @@
     }
 </div>
 
+<div> 
+    <span>@Localizer["saveSpan"]</span>
+    <button id="saveBtn" type="button" class="btn btn-primary">@Localizer["saveBtn"]</button>
+</div>
+
 @section Scripts
     {
     <script src="~/js/calendar.js" type="module"> </script>
@@ -121,7 +126,7 @@
             firstDayOfTheMonth.setDate(1);
             getUIElements();
             hookUpInteractionHandlers();
-            run(months, minMonth, maxMonth, firstDayOfTheMonth);
+            run(months, minMonth, maxMonth, firstDayOfTheMonth, "@Model.Id");
         });
     </script>
 }
