@@ -9,14 +9,19 @@ public class PlanRepository : BaseRepository<Plan>, IPlanRepository
     {
     }
 
-    public async Task<Plan?> GetFullPlanByIdAsync(Guid id, CancellationToken token)
+    public async Task<Plan?> GetPlanWithUsersAsync(Guid id, CancellationToken token = default)
     {
         if (DbContext.Plans is null) return null;
 
-        // TODO check if this causes an N+1 problem
-        return await DbContext.Plans.Include(p => p.Users)
-            .ThenInclude(u => u.Availabilities)
-            .SingleOrDefaultAsync(p => p.Id == id, token)
-            .ConfigureAwait(false);
+        return await DbContext.Plans.Where(p => p.Id == id).Include(p => p.Users).FirstOrDefaultAsync(token).ConfigureAwait(false);
+    }
+
+    public async Task<Plan?> GetPlanWithUsersAndAvailabilitiesAsync(Guid id, CancellationToken token = default)
+    {
+        if (DbContext.Plans is null) return null;
+
+#nullable disable // EF handles the nullability of the internal collections
+        return await DbContext.Plans.Where(p => p.Id == id).Include(p => p.Users).ThenInclude(u => u.Availabilities).FirstOrDefaultAsync(token).ConfigureAwait(false);
+#nullable enable
     }
 }

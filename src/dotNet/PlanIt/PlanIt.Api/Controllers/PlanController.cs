@@ -39,11 +39,16 @@ public class PlanController : Controller
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> Read(Guid id, [FromQuery] bool full = true, CancellationToken token = default)
+    public async Task<ActionResult> Read(Guid id, [FromQuery] bool users = true, [FromQuery] bool availabilities = false, CancellationToken token = default)
     {
         Plan? plan;
 
-        if (full) plan = await _repository.GetFullPlanByIdAsync(id).ConfigureAwait(false);
+        if (users)
+        {
+            plan = availabilities ?
+                await _repository.GetPlanWithUsersAndAvailabilitiesAsync(id, token).ConfigureAwait(false) :
+                await _repository.GetPlanWithUsersAsync(id, token).ConfigureAwait(false);
+        }
         else plan = await _repository.GetByIdAsync(id, token).ConfigureAwait(false);
 
         if (plan is null) return StatusCode(StatusCodes.Status404NotFound);
