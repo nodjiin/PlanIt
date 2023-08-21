@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanIt.Api", "PlanIt.Api\Pl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanIt.Persistence.Mocked", "PlanIt.Persistence.Mocked\PlanIt.Persistence.Mocked.csproj", "{067915A8-5F8A-42D1-A0C8-9FE7CCCDF36C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanIt.Presentation.WebApp", "PlanIt.Presentation.WebApp\PlanIt.Presentation.WebApp.csproj", "{3DF806A2-D81C-4884-839C-7E431315CABB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanIt.Presentation.WebApp", "PlanIt.Presentation.WebApp\PlanIt.Presentation.WebApp.csproj", "{3DF806A2-D81C-4884-839C-7E431315CABB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,7 +48,6 @@ Global
 		{F209F687-035C-48A6-A9B9-315E5C00F5E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F209F687-035C-48A6-A9B9-315E5C00F5E4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{067915A8-5F8A-42D1-A0C8-9FE7CCCDF36C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{067915A8-5F8A-42D1-A0C8-9FE7CCCDF36C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{067915A8-5F8A-42D1-A0C8-9FE7CCCDF36C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{067915A8-5F8A-42D1-A0C8-9FE7CCCDF36C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3DF806A2-D81C-4884-839C-7E431315CABB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
