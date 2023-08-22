@@ -27,7 +27,7 @@
                 <div class="list-group">
                     @foreach (var user in @Model.Users ?? Enumerable.Empty<User>())
                     {
-                        <a class="list-group-item list-group-item-action" data-user-id="@user.Id"
+                        <a class="list-group-item list-group-item-action" data-user-id="@user.Id.ToString()"
                            data-bs-dismiss="modal">@user.Name</a>
                     }
                 </div>
@@ -44,7 +44,7 @@
 </div>
 
 @* Calendar *@
-<div class="container" style="width: 20rem">
+<div class="container mt-5" style="width: 20rem">
     <div class="row">
         <div class="col"></div>
         <div class="col-auto">
@@ -106,7 +106,7 @@
     }
 </div>
 
-<div>
+<div class="text-center mt-5">
     <span>@Localizer["saveSpan"]</span>
     <button id="saveBtn" type="button" class="btn btn-primary">@Localizer["saveBtn"]</button>
 </div>

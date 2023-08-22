@@ -37,9 +37,9 @@ public class UserController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> Read(Guid id, CancellationToken token = default)
+    public async Task<ActionResult> Read(Guid id, [FromQuery] bool availabilities = true, CancellationToken token = default)
     {
-        var user = await _repository.GetByIdAsync(id, token).ConfigureAwait(false);
+        var user = availabilities ? await _repository.GetFullUserByIdAsync(id, token).ConfigureAwait(false) : await _repository.GetByIdAsync(id, token).ConfigureAwait(false);
         if (user is null) return StatusCode(StatusCodes.Status404NotFound);
         return Ok(user);
     }

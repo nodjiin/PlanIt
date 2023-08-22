@@ -9,7 +9,7 @@ let prevMonthArr;
 let nextMonthArr;
 
 // view data
-let currentUser;
+let currentUserName; // will be used if the user is new
 let dateElements;
 let statusCache = new Map();
 let fdMonth;
@@ -78,15 +78,94 @@ class DateElement {
     }
 }
 
+function createKey(date) {
+    // I want the key to be as small as possible, so a number will do
+    // date within the same year/month have to resolve on the same key
+    // let's do something really dumb, like year * 100 + month
+    return date.getFullYear() * 100 + date.getMonth();
+}
+
+function prefillCache() {
+    const date = new Date(minDate);
+    date.setDate(1);
+
+    while (compYearsMonths(date, maxDate) <= 0) {
+        const cachedValues = [35];
+        const currMonth = date.getMonth();
+        let firstDayOfWeek = getFirstDayOfTheWeek(date);
+        let dayIndex = 0;
+
+        // run to the first actual day of the week in the calendar table
+        while (dayIndex < firstDayOfWeek) {
+            cachedValues[dayIndex++] = disabled;
+        }
+
+        // elaborate all the valid days
+        let lastValidDate = dayIndex + getDaysInMonth(currMonth);
+        const currDate = new Date(date);
+        while (dayIndex < lastValidDate) {
+            if (currDate >= minDate && currDate <= maxDate) {
+                cachedValues[dayIndex++] = busy;
+            } else {
+                cachedValues[dayIndex++] = disabled;
+            }
+            currDate.setDate(currDate.getDate() + 1);
+        }
+
+        // finish up the rest
+        while (dayIndex < 35) {
+            cachedValues[dayIndex++] = disabled;
+        }
+
+        statusCache.set(createKey(date), cachedValues);
+        date.setMonth(date.getMonth() + 1);
+    }
+}
+
+function padDay(date) {
+    const temp = new Date(date);
+    temp.setDate(1);
+    return date.getDate() + getFirstDayOfTheWeek(temp) - 1;
+}
+
 // handlers
-function handleUserNameClick(event) {
-    currentUser = event.target.attributes["data-user-id"];
-    fillCalendar(false);
+async function handleUserNameClick(event) {
+    const userId = event.target.attributes["data-user-id"].value;
+
+    try {
+        const res = await fetch(userApiUrl + "/" + userId);
+        if (!res.ok) {
+            // TODO log & notify
+        }
+
+        const user = await res.json();
+        const avail = user.availabilities;
+
+        // fill the cache and then set all the availabilities
+        prefillCache();
+
+        // garbage implementation
+        // this could be optimized by sorting and grouping all the dates
+        // belonging to the same month together, but yet again, with the number
+        // of elements I have to handle this shouldn't really matter
+        for (let i = 0; i < avail.length; i++) {
+            const date = new Date(avail[i].date);
+            const day = padDay(date);
+            date.setDate(1); // setting to first day of the month to match the key
+            const cache = statusCache.get(createKey(date));
+            cache[day] = available;
+        }
+
+        // run updateMonth to load the cache
+        updateMonth(fdMonth, fdMonth);
+    } catch (err) {
+        // TODO notify could not load user info 
+        console.error(err);
+    }
 }
 
 function handleNewUserClick() {
-    currentUser = newUsernameInput.value;
-    fillCalendar(true);
+    currentUserName = newUsernameInput.value;
 }
 
 function handlePrevMonthArrowClick() {
@@ -121,12 +200,12 @@ function fillAvailabilities(user, statuses, month) {
     let index = 0;
 
     while (statuses[index] === outOfRange && index < 35) {
-        index++; 
+        index++;
     }
 
     while (statuses[index] !== outOfRange && index < 35) {
         if (statuses[index] === available) {
-            user.Availabilities.push({ date: day });
+            user.Availabilities.push({ date: day.toJSON() });
         }
         index++;
         day.setDate(day.getDate() + 1);
@@ -135,14 +214,14 @@ function fillAvailabilities(user, statuses, month) {
 
 function createUserAvailabilityDto() {
     const user = {
-        Name: currentUser,
+        Name: currentUserName,
         PlanId: planId,
         Availabilities: []
     }
 
     const firstDay = new Date(minDate);
     firstDay.setDate(1);
-    for (let month = firstDay; compYearsMonths(month, maxDate) < 0; month.setMonth(month.getMonth() + 1)) {
+    for (let month = firstDay; compYearsMonths(month, maxDate) <= 0; month.setMonth(month.getMonth() + 1)) {
         if (compYearsMonths(month, fdMonth) == 0) {
             // get live data
             // allocating the new array here is kinda wasteful, but the size is really small so whatever.
@@ -150,7 +229,7 @@ function createUserAvailabilityDto() {
         }
 
         // get data from cache
-        const cached = getCachedStatuses(month.getTime());
+        const cached = getCachedStatuses(createKey(month));
         if (cached != null) {
             fillAvailabilities(user, cached, month)
         }
@@ -163,6 +242,7 @@ async function handleSaveButtonClick() {
     const data = createUserAvailabilityDto();
 
     try {
+        // TODO remember to add unique constraint on user name 
         const res = await fetch(userApiUrl, {
             method: "post",
             headers: {
@@ -182,13 +262,6 @@ async function handleSaveButtonClick() {
     }
 }
 
-function fillCalendar(isNewUser) {
-    // TODO
-    // create calendar 
-    // fill calendar with all the availabilities
-    // fill calendar with free days selected by the user (if not new)
-}
-
 function getDaysInMonth(currentMonth) {
     const nextMonth = (currentMonth + 1) % 12; // Calculate the next month's index
     const currentDate = new Date(fdMonth);
@@ -201,7 +274,7 @@ function getDaysInMonth(currentMonth) {
 }
 
 function updateCache(key) {
-    const statusesToCache = [35]
+    const statusesToCache = [35];
     for (let i = 0; i < 35; i++) {
         statusesToCache[i] = dateElements[i].getStatus();
     }
@@ -216,31 +289,38 @@ function getCachedStatuses(key) {
     return null;
 }
 
+function getFirstDayOfTheWeek(date) {
+    let firstDayOfWeek = date.getDay();
+    if (firstDayOfWeek === 0) {
+        return 6;
+    } else {
+        return --firstDayOfWeek;
+    }
+}
+
 function updateMonth(oldMonth, newMonth) {
     monthp.innerText = months[newMonth.getMonth() + 1]
     if (oldMonth !== newMonth) {
-        updateCache(oldMonth.getTime());
+        updateCache(createKey(oldMonth));
     }
-    const cachedStatuses = getCachedStatuses(newMonth.getTime());
-    // update the date elements based on the first date of the month 
-    const currentJsMonth = newMonth.getMonth();
-    fdMonth.setMonth(currentJsMonth);
-    let firstDayOfWeek = fdMonth.getDay();
-    if (firstDayOfWeek === 0) {
-        firstDayOfWeek = 6;
-    } else {
-        firstDayOfWeek--;
-    }
+    const cachedStatuses = getCachedStatuses(createKey(newMonth));
 
+    // update the date elements based on the first date of the month 
+    const currMonth = newMonth.getMonth();
+    fdMonth.setMonth(currMonth);
+    let firstDayOfWeek = getFirstDayOfTheWeek(fdMonth);
     let dayIndex = 0;
     let el;
+
+    // run to the first actual day of the week in the calendar table
     while (dayIndex < firstDayOfWeek) {
         el = dateElements[dayIndex];
         el.updateStatus(outOfRange);
         dayIndex++;
     }
 
-    let lastValidDate = dayIndex + getDaysInMonth(currentJsMonth);
+    // elaborate all the valid days
+    let lastValidDate = dayIndex + getDaysInMonth(currMonth);
     const currDate = new Date(fdMonth);
     while (dayIndex < lastValidDate) {
         el = dateElements[dayIndex];
@@ -258,6 +338,7 @@ function updateMonth(oldMonth, newMonth) {
         dayIndex++;
     }
 
+    // finish up the rest
     while (dayIndex < 35) {
         el = dateElements[dayIndex];
         el.updateStatus(outOfRange);
