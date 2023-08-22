@@ -29,6 +29,7 @@ const outOfRange = 3;
 // apiUrls
 let userApiUrl;
 
+// UI class
 class DateElement {
     #status = busy;
     #element;
@@ -78,6 +79,7 @@ class DateElement {
     }
 }
 
+// cache helpers
 function createKey(date) {
     // I want the key to be as small as possible, so a number will do
     // date within the same year/month have to resolve on the same key
@@ -122,10 +124,91 @@ function prefillCache() {
     }
 }
 
+function updateCache(key) {
+    const statusesToCache = [35];
+    for (let i = 0; i < 35; i++) {
+        statusesToCache[i] = dateElements[i].getStatus();
+    }
+    statusCache.set(key, statusesToCache);
+}
+
+function getCachedStatuses(key) {
+    if (statusCache.has(key)) {
+        return statusCache.get(key);
+    }
+
+    return null;
+}
+
+// date helpers
 function padDay(date) {
     const temp = new Date(date);
     temp.setDate(1);
     return date.getDate() + getFirstDayOfTheWeek(temp) - 1;
+}
+
+function getDaysInMonth(currentMonth) {
+    const nextMonth = (currentMonth + 1) % 12; // Calculate the next month's index
+    const currentDate = new Date(fdMonth);
+
+    // Set the date to the last day of the current month
+    currentDate.setMonth(nextMonth);
+    currentDate.setDate(0);
+
+    return currentDate.getDate();
+}
+
+function getFirstDayOfTheWeek(date) {
+    let firstDayOfWeek = date.getDay();
+    if (firstDayOfWeek === 0) {
+        return 6;
+    } else {
+        return --firstDayOfWeek;
+    }
+}
+
+// communication helpers
+function fillAvailabilities(user, statuses, month) {
+    let day = new Date(month);
+    let index = 0;
+
+    while (statuses[index] === outOfRange && index < 35) {
+        index++;
+    }
+
+    while (statuses[index] !== outOfRange && index < 35) {
+        if (statuses[index] === available) {
+            user.Availabilities.push({ date: day.toJSON() });
+        }
+        index++;
+        day.setDate(day.getDate() + 1);
+    }
+}
+
+function createUserAvailabilityDto() {
+    const user = {
+        Name: currentUserName,
+        PlanId: planId,
+        Availabilities: []
+    }
+
+    const firstDay = new Date(minDate);
+    firstDay.setDate(1);
+    for (let month = firstDay; compYearsMonths(month, maxDate) <= 0; month.setMonth(month.getMonth() + 1)) {
+        if (compYearsMonths(month, fdMonth) == 0) {
+            // get live data
+            // allocating the new array here is kinda wasteful, but the size is really small so whatever.
+            fillAvailabilities(user, dateElements.map(el => el.getStatus()), month);
+        }
+
+        // get data from cache
+        const cached = getCachedStatuses(createKey(month));
+        if (cached != null) {
+            fillAvailabilities(user, cached, month)
+        }
+    }
+
+    return user;
 }
 
 // handlers
@@ -195,49 +278,6 @@ function handleNextMonthArrowClick() {
     prevMonthArr.style.display = "";
 }
 
-function fillAvailabilities(user, statuses, month) {
-    let day = new Date(month);
-    let index = 0;
-
-    while (statuses[index] === outOfRange && index < 35) {
-        index++;
-    }
-
-    while (statuses[index] !== outOfRange && index < 35) {
-        if (statuses[index] === available) {
-            user.Availabilities.push({ date: day.toJSON() });
-        }
-        index++;
-        day.setDate(day.getDate() + 1);
-    }
-}
-
-function createUserAvailabilityDto() {
-    const user = {
-        Name: currentUserName,
-        PlanId: planId,
-        Availabilities: []
-    }
-
-    const firstDay = new Date(minDate);
-    firstDay.setDate(1);
-    for (let month = firstDay; compYearsMonths(month, maxDate) <= 0; month.setMonth(month.getMonth() + 1)) {
-        if (compYearsMonths(month, fdMonth) == 0) {
-            // get live data
-            // allocating the new array here is kinda wasteful, but the size is really small so whatever.
-            fillAvailabilities(user, dateElements.map(el => el.getStatus()), month);
-        }
-
-        // get data from cache
-        const cached = getCachedStatuses(createKey(month));
-        if (cached != null) {
-            fillAvailabilities(user, cached, month)
-        }
-    }
-
-    return user;
-}
-
 async function handleSaveButtonClick() {
     const data = createUserAvailabilityDto();
 
@@ -259,42 +299,6 @@ async function handleSaveButtonClick() {
     } catch (err) {
         // TODO notify failed save
         console.error(err);
-    }
-}
-
-function getDaysInMonth(currentMonth) {
-    const nextMonth = (currentMonth + 1) % 12; // Calculate the next month's index
-    const currentDate = new Date(fdMonth);
-
-    // Set the date to the last day of the current month
-    currentDate.setMonth(nextMonth);
-    currentDate.setDate(0);
-
-    return currentDate.getDate();
-}
-
-function updateCache(key) {
-    const statusesToCache = [35];
-    for (let i = 0; i < 35; i++) {
-        statusesToCache[i] = dateElements[i].getStatus();
-    }
-    statusCache.set(key, statusesToCache);
-}
-
-function getCachedStatuses(key) {
-    if (statusCache.has(key)) {
-        return statusCache.get(key);
-    }
-
-    return null;
-}
-
-function getFirstDayOfTheWeek(date) {
-    let firstDayOfWeek = date.getDay();
-    if (firstDayOfWeek === 0) {
-        return 6;
-    } else {
-        return --firstDayOfWeek;
     }
 }
 
