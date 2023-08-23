@@ -13,6 +13,14 @@
     .cursor-pointer {
         cursor: pointer;
     }
+
+    .fixed-bottom-center {
+        position: fixed;
+        bottom: 10rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+    }
 </style>
 
 @* User modal *@
@@ -27,8 +35,7 @@
                 <div class="list-group">
                     @foreach (var user in @Model.Users ?? Enumerable.Empty<User>())
                     {
-                        <a class="list-group-item list-group-item-action" data-user-id="@user.Id.ToString()"
-                           data-bs-dismiss="modal">@user.Name</a>
+                        <a class="list-group-item list-group-item-action" data-user-id="@user.Id.ToString()">@user.Name</a>
                     }
                 </div>
             </div>
@@ -111,6 +118,11 @@
     <button id="saveBtn" type="button" class="btn btn-primary">@Localizer["saveBtn"]</button>
 </div>
 
+@*Alert*@
+<div id="alert" class="alert alert-danger fixed-bottom-center" role="alert" style="display: none;">
+    This is a Bootstrap alert floating at the bottom center.
+</div>
+
 @{
     var config = options.Value;
     var userApi = config.ServerUrl + config.UserApiUrl;
@@ -120,7 +132,7 @@
     {
     <script src="~/js/calendar.js" type="module"> </script>
     <script type="module">
-        import { getUIElements, hookUpInteractionHandlers, setApiUrls, setServerdata, run } from "../../js/calendar.js"
+        import { getUIElements, hookUpInteractionHandlers, setUrls, setServerdata, run } from "../../js/calendar.js"
 
         document.ready(function () {
             // server-side data
@@ -134,7 +146,7 @@
             firstDayOfTheMonth.setDate(1);
             getUIElements();
             hookUpInteractionHandlers();
-            setApiUrls("@userApi");
+            setUrls("@userApi", "@Url.Action("Full", "Plan")");
             setServerdata(months, minDate, maxDate, firstDayOfTheMonth, "@Model.Id")
             run();
         });

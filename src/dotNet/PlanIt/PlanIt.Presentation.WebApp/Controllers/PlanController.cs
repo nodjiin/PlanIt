@@ -19,7 +19,9 @@ public class PlanController : Controller
         _factory = factory;
 
         if (options is null || string.IsNullOrWhiteSpace(options.Value.ServerUrl) || string.IsNullOrWhiteSpace(options.Value.PlanApiUrl))
+        {
             throw new ArgumentException($"{nameof(options)} doesn't contain enough information to call the create plan url.");
+        }
 
         _planApiUrl = options.Value.ServerUrl + options.Value.PlanApiUrl;
         _logger = logger;
@@ -70,24 +72,48 @@ public class PlanController : Controller
     [Route("[controller]/[action]/{id}")]
     public async Task<IActionResult> Calendar(Guid id, CancellationToken token = default)
     {
-        var client = _factory.CreateClient();
-        Plan? plan;
+        Plan? plan = await GetPlan(id, token).ConfigureAwait(false);
+        if (plan == null)
+        {
+            _logger.LogError("Failed to load plan with Id '{id}'", id);
+            return RedirectToAction("NotFound404", "Error");
+        }
 
+        return View(plan);
+    }
+
+    [HttpGet]
+    [Route("[controller]/[action]/{id}")]
+    public async Task<IActionResult> Full(Guid id, CancellationToken token = default)
+    {
+        Plan? plan = await GetPlan(id, token).ConfigureAwait(false);
+        if (plan == null)
+        {
+            _logger.LogError("Failed to load plan with Id '{id}'", id);
+            return RedirectToAction("NotFound404", "Error");
+        }
+
+        return View(plan);
+    }
+
+    private async Task<Plan?> GetPlan(Guid id, CancellationToken token = default)
+    {
         try
         {
-            var response = await client.GetAsync($"{_planApiUrl}/{id}", token);
+            var client = _factory.CreateClient();
+            var response = await client.GetAsync($"{_planApiUrl}/{id}", token).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
-                throw new InvalidOperationException($"Failed to create a new plan. Server responded with status code '{response.StatusCode}' and reason '{response.ReasonPhrase}'"); // TODO custom exception
+            {
+                _logger.LogError($"Failed to create a new plan. Server responded with status code '{response.StatusCode}' and reason '{response.ReasonPhrase}'");
+                return null;
+            }
 
-            plan = await response.Content.ReadFromJsonAsync<Plan>(cancellationToken: token).ConfigureAwait(false);
-            if (plan is null) throw new InvalidOperationException("Value retrieved from server response is null.");
+            return await response.Content.ReadFromJsonAsync<Plan>(cancellationToken: token).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Exception raised while trying to retrieve plan {id}");
-            throw;
+            return null;
         }
-
-        return View(plan);
     }
 }
