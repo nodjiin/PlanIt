@@ -7,4 +7,10 @@ public class ErrorController : Controller
     {
         return View();
     }
+
+
+    public IActionResult NotFound404()
+    {
+        return View();
+    }
 }
