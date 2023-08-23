@@ -1,4 +1,4 @@
-// TODO user cookies?
+// TODO change user e.g. delete user cookie. 
 
 // UI elements
 let modal;
@@ -229,6 +229,31 @@ function createUserAvailabilityDto() {
     return user;
 }
 
+function setCookie(name, value, daysToExpire) {
+    const expirationDate = new Date();
+    expirationDate.setDate(expirationDate.getDate() + daysToExpire);
+    const currentPath = window.location.pathname;
+    const cookieValue = `${name}=${value}; expires=${expirationDate.toUTCString()}; path=${currentPath}`;
+
+    document.cookie = cookieValue;
+}
+
+function getCookie(name) {
+    const cookies = document.cookie.split(';'); 
+    
+    for (const cookie of cookies) {
+        const cookieParts = cookie.trim().split('=');
+        const cookieName = cookieParts[0];
+        const cookieValue = cookieParts[1];
+
+        if (cookieName === name) {
+            return decodeURIComponent(cookieValue); 
+        }
+    }
+
+    return null; // Cookie with the specified name not found
+}
+
 // notification helpers
 function notifyError(text) {
     alert.innerText = text;
@@ -264,10 +289,7 @@ function fadeOut(element) {
     }, 50);
 }
 
-// handlers
-async function handleUserNameClick(event) {
-    const userId = event.target.attributes["data-user-id"].value;
-
+async function loadUser(userId) {
     try {
         const res = await fetch(userApiUrl + "/" + userId);
         if (!res.ok) {
@@ -300,7 +322,13 @@ async function handleUserNameClick(event) {
         console.error(err);
         notifyError(loadErr);
     }
+}
 
+// handlers
+async function handleUserNameClick(event) {
+    const userId = event.target.attributes["data-user-id"].value;
+    setCookie("userId", userId, 2);
+    await loadUser(userId);
     modal.hide();
 }
 
@@ -358,6 +386,8 @@ async function handleSaveButtonClick() {
             return;
         }
 
+        const userId = await res.json();
+        setCookie("userId", userId, 2);
         window.location.href = fullPlanUrl + "/" + planId;
     } catch (err) {
         console.error(err);
@@ -473,5 +503,10 @@ export function run() {
     }
 
     // display modal
-    modal.show();
+    const userId = getCookie("userId");
+    if (userId === null) {
+        modal.show();
+    } else {
+        loadUser(userId);
+    }
 }
