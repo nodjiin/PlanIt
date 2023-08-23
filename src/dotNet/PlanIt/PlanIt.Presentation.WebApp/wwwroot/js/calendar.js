@@ -1,4 +1,7 @@
-// TODO change user e.g. delete user cookie. 
+// TODO change user e.g. delete user cookie.
+// TODO new user intro to calendar
+import { setCookie, getCookie } from "./cookiesHelper.js"
+import { notifyError } from "./alerts.js"
 
 // UI elements
 let modal;
@@ -9,7 +12,6 @@ let saveButton;
 let monthp;
 let prevMonthArr;
 let nextMonthArr;
-let alert;
 
 // view data
 let currentUserName; // will be used if the user is new
@@ -26,6 +28,7 @@ let planId;
 let months; // array containing the localized value for all the 12 months
 let saveErr;
 let loadErr;
+let updateErr;
 let invalidNameErr;
 
 // single date status
@@ -203,11 +206,16 @@ function fillAvailabilities(user, statuses, month) {
     }
 }
 
-function createUserAvailabilityDto() {
+function createUserAvailabilityDto(userId) {
     const user = {
-        Name: currentUserName,
         PlanId: planId,
         Availabilities: []
+    }
+
+    if (userId !== undefined) {
+        user.Id = userId
+    } else {
+        user.Name = currentUserName
     }
 
     const firstDay = new Date(minDate);
@@ -217,6 +225,7 @@ function createUserAvailabilityDto() {
             // get live data
             // allocating the new array here is kinda wasteful, but the size is really small so whatever.
             fillAvailabilities(user, dateElements.map(el => el.getStatus()), month);
+            continue;
         }
 
         // get data from cache
@@ -227,66 +236,6 @@ function createUserAvailabilityDto() {
     }
 
     return user;
-}
-
-function setCookie(name, value, daysToExpire) {
-    const expirationDate = new Date();
-    expirationDate.setDate(expirationDate.getDate() + daysToExpire);
-    const currentPath = window.location.pathname;
-    const cookieValue = `${name}=${value}; expires=${expirationDate.toUTCString()}; path=${currentPath}`;
-
-    document.cookie = cookieValue;
-}
-
-function getCookie(name) {
-    const cookies = document.cookie.split(';'); 
-    
-    for (const cookie of cookies) {
-        const cookieParts = cookie.trim().split('=');
-        const cookieName = cookieParts[0];
-        const cookieValue = cookieParts[1];
-
-        if (cookieName === name) {
-            return decodeURIComponent(cookieValue); 
-        }
-    }
-
-    return null; // Cookie with the specified name not found
-}
-
-// notification helpers
-function notifyError(text) {
-    alert.innerText = text;
-    fadeIn(alert);
-    setTimeout(() => {
-        fadeOut(alert);
-    }, 3000)
-}
-
-function fadeIn(element) {
-    element.style.opacity = 0;
-    element.style.display = 'block';
-
-    var opacity = 0;
-    var timer = setInterval(function () {
-        if (opacity >= 1) {
-            clearInterval(timer);
-        }
-        element.style.opacity = opacity;
-        opacity += 0.1;
-    }, 50);
-}
-
-function fadeOut(element) {
-    var opacity = 1;
-    var timer = setInterval(function () {
-        if (opacity <= 0) {
-            clearInterval(timer);
-            element.style.display = 'none';
-        }
-        element.style.opacity = opacity;
-        opacity -= 0.1;
-    }, 50);
 }
 
 async function loadUser(userId) {
@@ -322,6 +271,49 @@ async function loadUser(userId) {
         console.error(err);
         notifyError(loadErr);
     }
+}
+
+async function saveUser() {
+    const data = createUserAvailabilityDto();
+    const res = await fetch(userApiUrl, {
+        method: "post",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    });
+
+    if (!res.ok) {
+        if (res.status === 400) {
+            notifyError(invalidNameErr + ` ${currentUserName}`);
+        } else if (res.status === 500) {
+            notifyError(saveErr);
+        }
+
+        console.error(res.statusText);
+        return null;
+    }
+
+    return await res.json();
+}
+
+async function updateUser(userId) {
+    const data = createUserAvailabilityDto(userId);
+    const res = await fetch(userApiUrl, {
+        method: "put",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    });
+
+    if (!res.ok) {
+        notifyError(updateErr);
+        console.error(res.statusText);
+        return false;
+    }
+
+    return true;
 }
 
 // handlers
@@ -364,30 +356,21 @@ function handleNextMonthArrowClick() {
 }
 
 async function handleSaveButtonClick() {
-    const data = createUserAvailabilityDto();
-
     try {
-        const res = await fetch(userApiUrl, {
-            method: "post",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        });
-
-        if (!res.ok) {
-            if (res.status === 400) {
-                notifyError(invalidNameErr + ` ${currentUserName}`);
-            } else if (res.status === 500) {
-                notifyError(saveErr);
+        let userId = getCookie("userId");
+        if (userId != null) {
+            if (!await updateUser(userId)) {
+                return;
             }
-            
-            console.error(res.statusText);
-            return;
+        } else {
+            userId = await saveUser();
+            if (userId == null) {
+                return;
+            }
+
+            setCookie("userId", userId, 2);
         }
 
-        const userId = await res.json();
-        setCookie("userId", userId, 2);
         window.location.href = fullPlanUrl + "/" + planId;
     } catch (err) {
         console.error(err);
@@ -456,7 +439,6 @@ export function getUIElements() {
     monthp = document.getElementById("monthp");
     prevMonthArr = document.getElementById("prevMonthArr");
     nextMonthArr = document.getElementById("nextMonthArr");
-    alert = document.getElementById("alert");
     dateElements = [35];
     for (let i = 0; i < 35; i++) {
         dateElements[i] = new DateElement(document.getElementById("de_" + i));
@@ -474,11 +456,12 @@ export function hookUpInteractionHandlers() {
     saveButton.addEventListener("click", handleSaveButtonClick);
 }
 
-export function setLocalizedStrings(lMonths, lSaveErr, lLoadErr, lInvalidNameErr ) {
+export function setLocalizedStrings(lMonths, lSaveErr, lLoadErr, lUpdateErr, lInvalidNameErr) {
     months = lMonths;
     saveErr = lSaveErr;
     loadErr = lLoadErr;
-    invalidNameErr = lInvalidNameErr;  
+    updateErr = lUpdateErr;
+    invalidNameErr = lInvalidNameErr;
 }
 
 export function setUrls(userApi, fullPlanRoute) {

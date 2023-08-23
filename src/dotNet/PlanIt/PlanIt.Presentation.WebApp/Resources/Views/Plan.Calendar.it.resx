@@ -171,4 +171,7 @@
   <data name="sep" xml:space="preserve">
     <value>settembre</value>
   </data>
+  <data name="updateErr" xml:space="preserve">
+    <value>Non è stato possibile aggiornare le tue disponibilità.</value>
+  </data>
 </root>

@@ -14,13 +14,6 @@
         cursor: pointer;
     }
 
-    .fixed-bottom-center {
-        position: fixed;
-        bottom: 10rem;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 9999;
-    }
 </style>
 
 @* User modal *@
@@ -51,67 +44,7 @@
 </div>
 
 @* Calendar *@
-<div class="container mt-5" style="width: 20rem">
-    <div class="row">
-        <div class="col"></div>
-        <div class="col-auto">
-            <div id="prevMonthArr" class="monthSelectorArrow cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left"
-                     viewBox="0 0 16 16">
-                    <path fill-rule="evenodd"
-                          d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
-                </svg>
-            </div>
-        </div>
-        <div class="col-6 text-center">
-            <p id="monthp" class="lead"></p>
-        </div>
-        <div class="col-auto">
-            <div id="nextMonthArr" class="monthSelectorArrow cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right"
-                     viewBox="0 0 16 16">
-                    <path fill-rule="evenodd"
-                          d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
-                </svg>
-            </div>
-        </div>
-        <div class="col"></div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <strong>Mo</strong>
-        </div>
-        <div class="col">
-            <strong>Tu</strong>
-        </div>
-        <div class="col">
-            <strong>We</strong>
-        </div>
-        <div class="col">
-            <strong>Th</strong>
-        </div>
-        <div class="col">
-            <strong>Fr</strong>
-        </div>
-        <div class="col">
-            <strong>Sa</strong>
-        </div>
-        <div class="col">
-            <strong>Su</strong>
-        </div>
-    </div>
-    @for (int row = 0; row < 5; row++)
-    {
-        <div class="row">
-            @for (int col = 0; col < 7; col++)
-            {
-                <div id="de_@(col + row*7)" class="col text-center">
-                    -
-                </div>
-            }
-        </div>
-    }
-</div>
+@await Html.PartialAsync("_CalendarComponent")
 
 <div class="text-center mt-5">
     <span>@Localizer["saveSpan"]</span>
@@ -119,9 +52,7 @@
 </div>
 
 @*Alert*@
-<div id="alert" class="alert alert-danger fixed-bottom-center" role="alert" style="display: none;">
-    This is a Bootstrap alert floating at the bottom center.
-</div>
+@await Html.PartialAsync("_Alerts")
 
 @{
     var config = options.Value;
@@ -147,7 +78,7 @@
             getUIElements();
             hookUpInteractionHandlers();
             setUrls("@userApi", "@Url.Action("Full", "Plan")");
-            setLocalizedStrings(months, "@Localizer["saveErr"]", "@Localizer["loadErr"]", "@Localizer["invalidNameErr"]");
+            setLocalizedStrings(months, "@Localizer["saveErr"]", "@Localizer["loadErr"]", "@Localizer["updateErr"]", "@Localizer["invalidNameErr"]");
             setServerdata(minDate, maxDate, firstDayOfTheMonth, "@Model.Id");
             run();
         });
