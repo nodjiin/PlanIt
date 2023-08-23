@@ -141,6 +141,9 @@
   <data name="jun" xml:space="preserve">
     <value>giugno</value>
   </data>
+  <data name="loadErr" xml:space="preserve">
+    <value>Non è stato possibile caricare l'utente selezionato.</value>
+  </data>
   <data name="mar" xml:space="preserve">
     <value>marzo</value>
   </data>
@@ -155,6 +158,9 @@
   </data>
   <data name="saveBtn" xml:space="preserve">
     <value>Salvale!</value>
+  </data>
+  <data name="saveErr" xml:space="preserve">
+    <value>Non è stato possibile salvare le tue disponibilità.</value>
   </data>
   <data name="saveSpan" xml:space="preserve">
     <value>Seleziona le tue disponibilità e</value>

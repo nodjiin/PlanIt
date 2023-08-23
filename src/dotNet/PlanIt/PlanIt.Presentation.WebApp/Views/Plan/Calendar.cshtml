@@ -132,7 +132,7 @@
     {
     <script src="~/js/calendar.js" type="module"> </script>
     <script type="module">
-        import { getUIElements, hookUpInteractionHandlers, setUrls, setServerdata, run } from "../../js/calendar.js"
+        import { getUIElements, hookUpInteractionHandlers, setLocalizedStrings, setUrls, setServerdata, run } from "../../js/calendar.js"
 
         document.ready(function () {
             // server-side data
@@ -147,7 +147,8 @@
             getUIElements();
             hookUpInteractionHandlers();
             setUrls("@userApi", "@Url.Action("Full", "Plan")");
-            setServerdata(months, minDate, maxDate, firstDayOfTheMonth, "@Model.Id")
+            setLocalizedStrings(months, "@Localizer["saveErr"]", "@Localizer["loadErr"]");
+            setServerdata(minDate, maxDate, firstDayOfTheMonth, "@Model.Id");
             run();
         });
     </script>

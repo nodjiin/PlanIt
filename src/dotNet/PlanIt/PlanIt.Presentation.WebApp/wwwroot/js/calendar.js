@@ -1,4 +1,3 @@
-// TODO localize alert strings
 // TODO user cookies?
 
 // UI elements
@@ -19,10 +18,14 @@ let statusCache = new Map();
 let fdMonth;
 
 // server side data
-let months;
 let minDate;
 let maxDate;
 let planId;
+
+// localized strings
+let months; // array containing the localized value for all the 12 months
+let saveErr;
+let loadErr;
 
 // single date status
 const busy = 0;
@@ -30,7 +33,7 @@ const available = 1;
 const disabled = 2;
 const outOfRange = 3;
 
-// urls 
+// Urls 
 let userApiUrl;
 let fullPlanUrl;
 
@@ -268,7 +271,7 @@ async function handleUserNameClick(event) {
         const res = await fetch(userApiUrl + "/" + userId);
         if (!res.ok) {
             console.error(res.statusText);
-            notifyError("Failed to load user information");
+            notifyError(loadErr);
             return;
         }
 
@@ -294,7 +297,7 @@ async function handleUserNameClick(event) {
         updateMonth(fdMonth, fdMonth);
     } catch (err) {
         console.error(err);
-        notifyError("Failed to load user information");
+        notifyError(loadErr);
     }
 
     modal.hide();
@@ -346,15 +349,14 @@ async function handleSaveButtonClick() {
 
         if (!res.ok) {
             console.error(res.statusText);
-            notifyError("Failed to save your availabilities.");
+            notifyError(saveErr);
             return;
         }
 
-        // TODO planId 
-        window.location.href = fullPlanUrl + "/" + planId; 
+        window.location.href = fullPlanUrl + "/" + planId;
     } catch (err) {
         console.error(err);
-        notifyError("Failed to save your availabilities.");
+        notifyError(saveErr);
     }
 }
 
@@ -437,13 +439,18 @@ export function hookUpInteractionHandlers() {
     saveButton.addEventListener("click", handleSaveButtonClick);
 }
 
+export function setLocalizedStrings(lMonths, lSaveErr, lLoadErr) {
+    months = lMonths;
+    saveErr = lSaveErr;
+    loadErr = lLoadErr;
+}
+
 export function setUrls(userApi, fullPlanRoute) {
     userApiUrl = userApi;
     fullPlanUrl = fullPlanRoute;
 }
 
-export function setServerdata(sMonths, sMinDate, sMaxDate, firstDayOfTheMonth, splanId) {
-    months = sMonths;
+export function setServerdata(sMinDate, sMaxDate, firstDayOfTheMonth, splanId) {
     minDate = sMinDate;
     maxDate = sMaxDate;
     fdMonth = firstDayOfTheMonth;
