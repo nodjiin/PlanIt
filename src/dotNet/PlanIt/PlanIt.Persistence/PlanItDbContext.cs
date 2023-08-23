@@ -19,6 +19,7 @@ public class PlanItDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder?.ApplyConfigurationsFromAssembly(typeof(PlanItDbContext).Assembly);
+        modelBuilder?.Entity<User>().HasIndex(u => new { u.PlanId, u.Name }).IsUnique();
     }
 }
 #nullable enable

@@ -53,6 +53,16 @@ public class InMemoryPlanRepository : IPlanRepository
         return (IReadOnlyList<Plan>)_plans.Values.Skip((page - 1) * size).Take(size).ToList();
     });
 
+    public Task<Plan?> GetPlanWithUsersAndAvailabilitiesAsync(Guid id, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Plan?> GetPlanWithUsersAsync(Guid id, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<IReadOnlyList<Plan>> ListAllAsync(CancellationToken token = default)
     {
         return Task.FromResult((IReadOnlyList<Plan>)_plans.Values.ToList());
