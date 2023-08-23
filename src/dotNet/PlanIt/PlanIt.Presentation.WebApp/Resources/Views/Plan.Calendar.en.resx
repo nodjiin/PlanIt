@@ -132,6 +132,9 @@
   <data name="feb" xml:space="preserve">
     <value>february</value>
   </data>
+  <data name="invalidNameErr" xml:space="preserve">
+    <value>The plan contains already a user named: </value>
+  </data>
   <data name="jan" xml:space="preserve">
     <value>genuary</value>
   </data>

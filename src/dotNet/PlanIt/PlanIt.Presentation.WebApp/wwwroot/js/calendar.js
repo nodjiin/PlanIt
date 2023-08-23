@@ -26,6 +26,7 @@ let planId;
 let months; // array containing the localized value for all the 12 months
 let saveErr;
 let loadErr;
+let invalidNameErr;
 
 // single date status
 const busy = 0;
@@ -338,7 +339,6 @@ async function handleSaveButtonClick() {
     const data = createUserAvailabilityDto();
 
     try {
-        // TODO remember to add unique constraint on user name 
         const res = await fetch(userApiUrl, {
             method: "post",
             headers: {
@@ -348,8 +348,13 @@ async function handleSaveButtonClick() {
         });
 
         if (!res.ok) {
+            if (res.status === 400) {
+                notifyError(invalidNameErr + ` ${currentUserName}`);
+            } else if (res.status === 500) {
+                notifyError(saveErr);
+            }
+            
             console.error(res.statusText);
-            notifyError(saveErr);
             return;
         }
 
@@ -439,10 +444,11 @@ export function hookUpInteractionHandlers() {
     saveButton.addEventListener("click", handleSaveButtonClick);
 }
 
-export function setLocalizedStrings(lMonths, lSaveErr, lLoadErr) {
+export function setLocalizedStrings(lMonths, lSaveErr, lLoadErr, lInvalidNameErr ) {
     months = lMonths;
     saveErr = lSaveErr;
     loadErr = lLoadErr;
+    invalidNameErr = lInvalidNameErr;  
 }
 
 export function setUrls(userApi, fullPlanRoute) {

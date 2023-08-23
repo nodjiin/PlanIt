@@ -132,6 +132,9 @@
   <data name="feb" xml:space="preserve">
     <value>febbraio</value>
   </data>
+  <data name="invalidNameErr" xml:space="preserve">
+    <value>Il piano contiene già un utente con nome:</value>
+  </data>
   <data name="jan" xml:space="preserve">
     <value>gennaio</value>
   </data>
