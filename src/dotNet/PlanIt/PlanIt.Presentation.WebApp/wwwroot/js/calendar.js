@@ -1,6 +1,6 @@
 // TODO change user e.g. delete user cookie.
 // TODO new user intro to calendar
-import { setCookie, getCookie } from "./cookiesHelper.js"
+import { setCookie, getCookie, deleteCookie } from "./cookiesHelper.js"
 import { notifyError } from "./alerts.js"
 
 // UI elements
@@ -9,6 +9,7 @@ let userListItems;
 let newUsernameInput;
 let addButton;
 let saveButton;
+let changeButton;
 let monthp;
 let prevMonthArr;
 let nextMonthArr;
@@ -378,6 +379,11 @@ async function handleSaveButtonClick() {
     }
 }
 
+function handleChangeButtonClick() {
+    deleteCookie("userId");
+    location.reload(); // it would also be possible to avoid the reload
+}
+
 function updateMonth(oldMonth, newMonth) {
     monthp.innerText = months[newMonth.getMonth() + 1]
     if (oldMonth !== newMonth) {
@@ -436,6 +442,7 @@ export function getUIElements() {
     newUsernameInput = document.getElementById("newUsernameInput");
     addButton = document.getElementById("addButton");
     saveButton = document.getElementById("saveBtn");
+    changeButton = document.getElementById("changeBtn");
     monthp = document.getElementById("monthp");
     prevMonthArr = document.getElementById("prevMonthArr");
     nextMonthArr = document.getElementById("nextMonthArr");
@@ -454,6 +461,7 @@ export function hookUpInteractionHandlers() {
     prevMonthArr.addEventListener("click", handlePrevMonthArrowClick);
     nextMonthArr.addEventListener("click", handleNextMonthArrowClick);
     saveButton.addEventListener("click", handleSaveButtonClick);
+    changeButton.addEventListener("click", handleChangeButtonClick)
 }
 
 export function setLocalizedStrings(lMonths, lSaveErr, lLoadErr, lUpdateErr, lInvalidNameErr) {

@@ -22,3 +22,8 @@ export function getCookie(name) {
 
     return null; // Cookie with the specified name not found
 }
+
+export function deleteCookie(cookieName) {
+    const currentPath = window.location.pathname;
+    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${currentPath};`;
+}

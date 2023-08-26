@@ -123,6 +123,12 @@
   <data name="aug" xml:space="preserve">
     <value>agosto</value>
   </data>
+  <data name="changeBtn" xml:space="preserve">
+    <value>Cambialo!</value>
+  </data>
+  <data name="changeSpan" xml:space="preserve">
+    <value>Hai selezionato l'utente sbagliato?</value>
+  </data>
   <data name="dec" xml:space="preserve">
     <value>dicembre</value>
   </data>
