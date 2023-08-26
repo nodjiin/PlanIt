@@ -1,7 +1,7 @@
-// TODO change user e.g. delete user cookie.
 // TODO new user intro to calendar
 import { setCookie, getCookie, deleteCookie } from "./cookiesHelper.js"
 import { notifyError } from "./alerts.js"
+import { compYearsMonths, getDaysInMonth, getFirstDayOfTheWeek, padDay } from "./dateHelper.js"
 
 // UI elements
 let modal;
@@ -42,6 +42,7 @@ const outOfRange = 3;
 let userApiUrl;
 let fullPlanUrl;
 
+// TODO CalendarDateElement & PlanDateElement
 // UI class
 class DateElement {
     #status = busy;
@@ -106,7 +107,6 @@ function prefillCache() {
 
     while (compYearsMonths(date, maxDate) <= 0) {
         const cachedValues = [35];
-        const currMonth = date.getMonth();
         let firstDayOfWeek = getFirstDayOfTheWeek(date);
         let dayIndex = 0;
 
@@ -116,7 +116,7 @@ function prefillCache() {
         }
 
         // elaborate all the valid days
-        let lastValidDate = dayIndex + getDaysInMonth(currMonth);
+        let lastValidDate = dayIndex + getDaysInMonth(date);
         const currDate = new Date(date);
         while (dayIndex < lastValidDate) {
             if (currDate >= minDate && currDate <= maxDate) {
@@ -151,42 +151,6 @@ function getCachedStatuses(key) {
     }
 
     return null;
-}
-
-// date helpers
-function padDay(date) {
-    const temp = new Date(date);
-    temp.setDate(1);
-    return date.getDate() + getFirstDayOfTheWeek(temp) - 1;
-}
-
-function getDaysInMonth(currentMonth) {
-    const nextMonth = (currentMonth + 1) % 12; // Calculate the next month's index
-    const currentDate = new Date(fdMonth);
-
-    // Set the date to the last day of the current month
-    currentDate.setMonth(nextMonth);
-    currentDate.setDate(0);
-
-    return currentDate.getDate();
-}
-
-function getFirstDayOfTheWeek(date) {
-    let firstDayOfWeek = date.getDay();
-    if (firstDayOfWeek === 0) {
-        return 6;
-    } else {
-        return --firstDayOfWeek;
-    }
-}
-
-function compYearsMonths(a, b) {
-    const yearComp = a.getFullYear() - b.getFullYear();
-    if (yearComp !== 0) {
-        return yearComp;
-    }
-
-    return a.getMonth() - b.getMonth();
 }
 
 // communication helpers
@@ -386,38 +350,47 @@ function handleChangeButtonClick() {
 
 function updateMonth(oldMonth, newMonth) {
     monthp.innerText = months[newMonth.getMonth() + 1]
+
+    // update cache if switching to a new month
     if (oldMonth !== newMonth) {
         updateCache(createKey(oldMonth));
     }
-    const cachedStatuses = getCachedStatuses(createKey(newMonth));
 
     // update the date elements based on the first date of the month 
-    const currMonth = newMonth.getMonth();
-    fdMonth.setMonth(currMonth);
+    fdMonth.setMonth(newMonth.getMonth());
+
+    // check if the month is present in the cache, and update it if that's the case
+    const cachedStatuses = getCachedStatuses(createKey(newMonth));
+    if (cachedStatuses !== null) {
+        for (let i = 0; i < 35; i++) {
+            dateElements[i].updateStatus(cachedStatuses[i]);
+        }
+
+        return;
+    }
+
+    fillCalendar(newMonth);
+}
+
+function fillCalendar(newMonth) {
     let firstDayOfWeek = getFirstDayOfTheWeek(fdMonth);
     let dayIndex = 0;
     let el;
 
     // run to the first actual day of the week in the calendar table
     while (dayIndex < firstDayOfWeek) {
-        el = dateElements[dayIndex];
-        el.updateStatus(outOfRange);
-        dayIndex++;
+        dateElements[dayIndex++].updateStatus(outOfRange);
     }
 
     // elaborate all the valid days
-    let lastValidDate = dayIndex + getDaysInMonth(currMonth);
+    let lastValidDate = dayIndex + getDaysInMonth(newMonth);
     const currDate = new Date(fdMonth);
     while (dayIndex < lastValidDate) {
         el = dateElements[dayIndex];
-        if (cachedStatuses !== null) {
-            el.updateStatus(cachedStatuses[dayIndex]);
+        if (currDate >= minDate && currDate <= maxDate) {
+            el.updateStatus(busy);
         } else {
-            if (currDate >= minDate && currDate <= maxDate) {
-                el.updateStatus(busy);
-            } else {
-                el.updateStatus(disabled);
-            }
+            el.updateStatus(disabled);
         }
         el.updateDayValue(currDate.getDate());
         currDate.setDate(currDate.getDate() + 1);
@@ -426,9 +399,7 @@ function updateMonth(oldMonth, newMonth) {
 
     // finish up the rest
     while (dayIndex < 35) {
-        el = dateElements[dayIndex];
-        el.updateStatus(outOfRange);
-        dayIndex++;
+        dateElements[dayIndex++].updateStatus(outOfRange);
     }
 }
 
