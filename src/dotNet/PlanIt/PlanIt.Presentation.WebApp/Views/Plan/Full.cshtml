@@ -1,1 +1,26 @@
-﻿<h1>WIP</h1>
+﻿@model PlanIt.Domain.Entities.Plan
+
+@* Calendar *@
+@await Html.PartialAsync("_CalendarComponent")
+
+@section Scripts {
+    <script src="~/js/plan.js" type="module"> </script>
+    <script type="module">
+        import { getUIElements, hookUpInteractionHandlers, setLocalizedStrings, setServerdata, run } from "../../js/plan.js"
+        document.ready(function () {
+            const months = ["@Localizer["err"]", "@Localizer["jan"]", "@Localizer["feb"]",
+                "@Localizer["mar"]", "@Localizer["apr"]", "@Localizer["may"]", "@Localizer["jun"]",
+                "@Localizer["jul"]", "@Localizer["aug"]", "@Localizer["sep"]", "@Localizer["oct"]",
+                "@Localizer["nov"]", "@Localizer["dec"]"];
+            const minDate = new Date("@Model.FirstSchedulableDate.Date.ToString("yyyy-MM-dd")");
+            const maxDate = new Date("@Model.LastSchedulableDate.Date.ToString("yyyy-MM-dd")");
+            const users = @Html.Raw(Json.Serialize(Model.Users));
+
+            getUIElements();
+            hookUpInteractionHandlers();
+            setLocalizedStrings(months);
+            setServerdata(minDate, maxDate, users);
+            run();
+        });
+    </script>
+}

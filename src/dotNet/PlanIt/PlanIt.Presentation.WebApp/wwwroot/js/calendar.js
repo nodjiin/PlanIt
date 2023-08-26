@@ -1,7 +1,7 @@
 // TODO new user intro to calendar
 import { setCookie, getCookie, deleteCookie } from "./cookiesHelper.js"
 import { notifyError } from "./alerts.js"
-import { compYearsMonths, getDaysInMonth, getFirstDayOfTheWeek, padDay } from "./dateHelper.js"
+import { createMonthKey, compYearsMonths, getDaysInMonth, getFirstDayOfTheWeek, padDay } from "./dateHelper.js"
 
 // UI elements
 let modal;
@@ -94,13 +94,6 @@ class DateElement {
 }
 
 // cache helpers
-function createKey(date) {
-    // I want the key to be as small as possible, so a number will do
-    // date within the same year/month have to resolve on the same key
-    // let's do something really dumb, like year * 100 + month
-    return date.getFullYear() * 100 + date.getMonth();
-}
-
 function prefillCache() {
     const date = new Date(minDate);
     date.setDate(1);
@@ -132,7 +125,7 @@ function prefillCache() {
             cachedValues[dayIndex++] = disabled;
         }
 
-        statusCache.set(createKey(date), cachedValues);
+        statusCache.set(createMonthKey(date), cachedValues);
         date.setMonth(date.getMonth() + 1);
     }
 }
@@ -194,7 +187,7 @@ function createUserAvailabilityDto(userId) {
         }
 
         // get data from cache
-        const cached = getCachedStatuses(createKey(month));
+        const cached = getCachedStatuses(createMonthKey(month));
         if (cached != null) {
             fillAvailabilities(user, cached, month)
         }
@@ -226,7 +219,7 @@ async function loadUser(userId) {
             const date = new Date(avail[i].date);
             const day = padDay(date);
             date.setDate(1); // setting to first day of the month to match the key
-            const cache = statusCache.get(createKey(date));
+            const cache = statusCache.get(createMonthKey(date));
             cache[day] = available;
         }
 
@@ -353,14 +346,14 @@ function updateMonth(oldMonth, newMonth) {
 
     // update cache if switching to a new month
     if (oldMonth !== newMonth) {
-        updateCache(createKey(oldMonth));
+        updateCache(createMonthKey(oldMonth));
     }
 
     // update the date elements based on the first date of the month 
     fdMonth.setMonth(newMonth.getMonth());
 
     // check if the month is present in the cache, and update it if that's the case
-    const cachedStatuses = getCachedStatuses(createKey(newMonth));
+    const cachedStatuses = getCachedStatuses(createMonthKey(newMonth));
     if (cachedStatuses !== null) {
         for (let i = 0; i < 35; i++) {
             dateElements[i].updateStatus(cachedStatuses[i]);
@@ -448,10 +441,11 @@ export function setUrls(userApi, fullPlanRoute) {
     fullPlanUrl = fullPlanRoute;
 }
 
-export function setServerdata(sMinDate, sMaxDate, firstDayOfTheMonth, splanId) {
+export function setServerdata(sMinDate, sMaxDate, splanId) {
     minDate = sMinDate;
+    fdMonth = new Date(minDate);
+    fdMonth.setDate(1);
     maxDate = sMaxDate;
-    fdMonth = firstDayOfTheMonth;
     planId = splanId;
 }
 

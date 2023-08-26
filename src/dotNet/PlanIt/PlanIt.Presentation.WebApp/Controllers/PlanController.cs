@@ -54,7 +54,9 @@ public class PlanController : Controller
         {
             var response = await client.PostAsync(_planApiUrl, content, token).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
+            {
                 throw new InvalidOperationException($"Failed to create a new plan. Server responded with status code '{response.StatusCode}' and reason '{response.ReasonPhrase}'"); // TODO custom exception
+            }
 
             var responseContent = await response.Content.ReadAsStringAsync(token).ConfigureAwait(false);
             newPlanId = new Guid(responseContent.Substring(1, responseContent.Length - 2));
@@ -72,7 +74,7 @@ public class PlanController : Controller
     [Route("[controller]/[action]/{id}")]
     public async Task<IActionResult> Calendar(Guid id, CancellationToken token = default)
     {
-        Plan? plan = await GetPlan(id, token).ConfigureAwait(false);
+        Plan? plan = await GetPlan(id, false, token).ConfigureAwait(false);
         if (plan == null)
         {
             _logger.LogError("Failed to load plan with Id '{id}'", id);
@@ -86,7 +88,7 @@ public class PlanController : Controller
     [Route("[controller]/[action]/{id}")]
     public async Task<IActionResult> Full(Guid id, CancellationToken token = default)
     {
-        Plan? plan = await GetPlan(id, token).ConfigureAwait(false);
+        Plan? plan = await GetPlan(id, true, token).ConfigureAwait(false);
         if (plan == null)
         {
             _logger.LogError("Failed to load plan with Id '{id}'", id);
@@ -96,12 +98,13 @@ public class PlanController : Controller
         return View(plan);
     }
 
-    private async Task<Plan?> GetPlan(Guid id, CancellationToken token = default)
+    private async Task<Plan?> GetPlan(Guid id, bool full, CancellationToken token = default)
     {
         try
         {
             var client = _factory.CreateClient();
-            var response = await client.GetAsync($"{_planApiUrl}/{id}", token).ConfigureAwait(false);
+            var url = full ? $"{_planApiUrl}/{id}?availabilities=true" : $"{_planApiUrl}/{id}";
+            var response = await client.GetAsync(url, token).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError($"Failed to create a new plan. Server responded with status code '{response.StatusCode}' and reason '{response.ReasonPhrase}'");

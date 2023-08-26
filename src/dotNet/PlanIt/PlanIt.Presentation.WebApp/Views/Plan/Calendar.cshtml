@@ -67,7 +67,6 @@
 
 @section Scripts
     {
-    <script src="~/js/calendar.js" type="module"> </script>
     <script type="module">
         import { getUIElements, hookUpInteractionHandlers, setLocalizedStrings, setUrls, setServerdata, run } from "../../js/calendar.js"
 
@@ -79,13 +78,11 @@
                 "@Localizer["nov"]", "@Localizer["dec"]"];
             const minDate = new Date("@Model.FirstSchedulableDate.Date.ToString("yyyy-MM-dd")");
             const maxDate = new Date("@Model.LastSchedulableDate.Date.ToString("yyyy-MM-dd")");
-            const firstDayOfTheMonth = new Date(minDate);
-            firstDayOfTheMonth.setDate(1);
             getUIElements();
             hookUpInteractionHandlers();
             setUrls("@userApi", "@Url.Action("Full", "Plan")");
             setLocalizedStrings(months, "@Localizer["saveErr"]", "@Localizer["loadErr"]", "@Localizer["updateErr"]", "@Localizer["invalidNameErr"]");
-            setServerdata(minDate, maxDate, firstDayOfTheMonth, "@Model.Id");
+            setServerdata(minDate, maxDate, "@Model.Id");
             run();
         });
     </script>
