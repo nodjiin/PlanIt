@@ -105,7 +105,7 @@ function prefillCache() {
 
         // run to the first actual day of the week in the calendar table
         while (dayIndex < firstDayOfWeek) {
-            cachedValues[dayIndex++] = disabled;
+            cachedValues[dayIndex++] = outOfRange;
         }
 
         // elaborate all the valid days
@@ -122,7 +122,7 @@ function prefillCache() {
 
         // finish up the rest
         while (dayIndex < 35) {
-            cachedValues[dayIndex++] = disabled;
+            cachedValues[dayIndex++] = outOfRange;
         }
 
         statusCache.set(createMonthKey(date), cachedValues);
@@ -352,20 +352,12 @@ function updateMonth(oldMonth, newMonth) {
     // update the date elements based on the first date of the month 
     fdMonth.setMonth(newMonth.getMonth());
 
-    // check if the month is present in the cache, and update it if that's the case
+    // check if the month is present in the cache
     const cachedStatuses = getCachedStatuses(createMonthKey(newMonth));
-    if (cachedStatuses !== null) {
-        for (let i = 0; i < 35; i++) {
-            dateElements[i].updateStatus(cachedStatuses[i]);
-        }
-
-        return;
-    }
-
-    fillCalendar(newMonth);
+    fillCalendar(newMonth, cachedStatuses);
 }
 
-function fillCalendar(newMonth) {
+function fillCalendar(newMonth, cachedStatuses) {
     let firstDayOfWeek = getFirstDayOfTheWeek(fdMonth);
     let dayIndex = 0;
     let el;
@@ -380,11 +372,16 @@ function fillCalendar(newMonth) {
     const currDate = new Date(fdMonth);
     while (dayIndex < lastValidDate) {
         el = dateElements[dayIndex];
-        if (currDate >= minDate && currDate <= maxDate) {
-            el.updateStatus(busy);
+        if (cachedStatuses !== null) { //restore the cached status if possible
+            el.updateStatus(cachedStatuses[dayIndex]);
         } else {
-            el.updateStatus(disabled);
+            if (currDate >= minDate && currDate <= maxDate) {
+                el.updateStatus(busy);
+            } else {
+                el.updateStatus(disabled);
+            }
         }
+
         el.updateDayValue(currDate.getDate());
         currDate.setDate(currDate.getDate() + 1);
         dayIndex++;
