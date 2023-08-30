@@ -81,20 +81,24 @@ namespace PlanIt.Persistence.Migrations
 
             modelBuilder.Entity("PlanIt.Domain.Entities.Availability", b =>
                 {
-                    b.HasOne("PlanIt.Domain.Entities.User", null)
+                    b.HasOne("PlanIt.Domain.Entities.User", "User")
                         .WithMany("Availabilities")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("PlanIt.Domain.Entities.User", b =>
                 {
-                    b.HasOne("PlanIt.Domain.Entities.Plan", null)
+                    b.HasOne("PlanIt.Domain.Entities.Plan", "Plan")
                         .WithMany("Users")
                         .HasForeignKey("PlanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Plan");
                 });
 
             modelBuilder.Entity("PlanIt.Domain.Entities.Plan", b =>

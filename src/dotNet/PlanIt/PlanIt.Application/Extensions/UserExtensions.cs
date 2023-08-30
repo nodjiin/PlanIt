@@ -44,4 +44,17 @@ public static class UserExtensions
             }
         }
     }
+
+    public static ReadUserDto ConvertToDto(this User user)
+    {
+        ReadUserDto dto = new ReadUserDto();
+        dto.Id = user.Id;
+        dto.Name = user.Name;
+        if (user.Availabilities != null)
+        {
+            dto.Availabilities = user.Availabilities.Select(av => av.ConvertToDto()).ToList();
+        }
+
+        return dto;
+    }
 }

@@ -33,7 +33,8 @@ public class PlanController : Controller
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> Read(CancellationToken token = default)
     {
-        return Ok(await _repository.ListAllAsync(token).ConfigureAwait(false));
+        var plans = await _repository.ListAllAsync(token).ConfigureAwait(false);
+        return Ok(plans.Select(p => p.ConvertToDto()).ToList());
     }
 
     [HttpGet("{id}")]
@@ -49,10 +50,16 @@ public class PlanController : Controller
                 await _repository.GetPlanWithUsersAndAvailabilitiesAsync(id, token).ConfigureAwait(false) :
                 await _repository.GetPlanWithUsersAsync(id, token).ConfigureAwait(false);
         }
-        else plan = await _repository.GetByIdAsync(id, token).ConfigureAwait(false);
+        else
+        {
+            plan = await _repository.GetByIdAsync(id, token).ConfigureAwait(false);
+        }
 
-        if (plan is null) return StatusCode(StatusCodes.Status404NotFound);
-        return Ok(plan);
+        if (plan is null)
+        {
+            return StatusCode(StatusCodes.Status404NotFound);
+        }
+        return Ok(plan.ConvertToDto());
     }
 
     [HttpPut]

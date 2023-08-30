@@ -4,5 +4,6 @@ namespace PlanIt.Domain.Entities;
 public class Availability : BaseEntity
 {
     public Guid UserId { get; set; }
+    public User? User { get; set; }
     public DateTime Date { get; set; }
 }

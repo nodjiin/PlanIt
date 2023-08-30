@@ -5,5 +5,6 @@ public class User : BaseEntity
 {
     public string? Name { get; set; }
     public Guid PlanId { get; set; }
+    public Plan? Plan { get; set; }
     public List<Availability>? Availabilities { get; set; }
 }

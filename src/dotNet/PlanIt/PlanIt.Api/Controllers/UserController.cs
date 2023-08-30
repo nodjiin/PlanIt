@@ -47,7 +47,8 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> Read(CancellationToken token = default)
     {
-        return Ok(await _repository.ListAllAsync(token).ConfigureAwait(false));
+        var users = await _repository.ListAllAsync(token).ConfigureAwait(false);
+        return Ok(users.Select(u => u.ConvertToDto()).ToList());
     }
 
     [HttpGet("{id}")]
@@ -61,7 +62,7 @@ public class UserController : ControllerBase
         {
             return StatusCode(StatusCodes.Status404NotFound);
         }
-        return Ok(user);
+        return Ok(user.ConvertToDto());
     }
 
     [HttpPut]
