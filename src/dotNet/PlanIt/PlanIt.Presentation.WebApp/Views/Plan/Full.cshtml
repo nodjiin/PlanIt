@@ -2,6 +2,10 @@
 
 @* Calendar *@
 @await Html.PartialAsync("_CalendarComponent")
+<div class="text-center mt-5">
+    <span>@Localizer["backToCalendarSpan"]</span>
+    <button id="backToCalendarBtn" type="button" class="btn btn-primary">@Localizer["backToCalendarBtn"]</button>
+</div>
 
 @section Scripts {
     <script src="~/js/plan.js" type="module"> </script>
@@ -19,7 +23,7 @@
             getUIElements();
             hookUpInteractionHandlers();
             setLocalizedStrings(months);
-            setServerdata(minDate, maxDate, users);
+            setServerdata(minDate, maxDate, "@Model.Id", users);
             run();
         });
     </script>

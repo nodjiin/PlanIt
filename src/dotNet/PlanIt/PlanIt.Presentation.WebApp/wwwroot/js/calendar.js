@@ -42,7 +42,6 @@ const outOfRange = 3;
 let userApiUrl;
 let fullPlanUrl;
 
-// TODO CalendarDateElement & PlanDateElement
 // UI class
 class DateElement {
     #status = busy;

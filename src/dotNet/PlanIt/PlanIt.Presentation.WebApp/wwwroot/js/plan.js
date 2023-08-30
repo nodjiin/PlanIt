@@ -6,6 +6,7 @@ import { createDateKey, compYearsMonths, getDaysInMonth, getFirstDayOfTheWeek } 
 let monthp;
 let prevMonthArr;
 let nextMonthArr;
+let backToCalendarBtn;
 
 // view data
 let planElements;
@@ -14,6 +15,7 @@ let fdMonth;
 // server side data
 let minDate;
 let maxDate;
+let planId;
 let totUsers;
 
 // localized strings
@@ -169,11 +171,16 @@ function fillAvailabilitiesMap(users) {
     }
 }
 
+function handleBackToCalendarBtnClick() {
+        window.location.href = "/Plan/Calendar/" + planId;
+}
+
 // exports
 export function getUIElements() {
     monthp = document.getElementById("monthp");
     prevMonthArr = document.getElementById("prevMonthArr");
     nextMonthArr = document.getElementById("nextMonthArr");
+    backToCalendarBtn = document.getElementById("backToCalendarBtn"); 
     planElements = [35];
     for (let i = 0; i < 35; i++) {
         planElements[i] = new PlanElement(document.getElementById("de_" + i));
@@ -183,18 +190,19 @@ export function getUIElements() {
 export function hookUpInteractionHandlers() {
     prevMonthArr.addEventListener("click", handlePrevMonthArrowClick);
     nextMonthArr.addEventListener("click", handleNextMonthArrowClick);
+    backToCalendarBtn.addEventListener("click", handleBackToCalendarBtnClick);
 }
 
 export function setLocalizedStrings(lMonths) {
     months = lMonths;
 }
 
-export function setServerdata(sMinDate, sMaxDate, users) {
+export function setServerdata(sMinDate, sMaxDate, sPlanId, users) {
     minDate = sMinDate;
     fdMonth = new Date(minDate);
     fdMonth.setDate(1);
     maxDate = sMaxDate;
-
+    planId = sPlanId;
     totUsers = users.length;
     fillAvailabilitiesMap(users)
 }
