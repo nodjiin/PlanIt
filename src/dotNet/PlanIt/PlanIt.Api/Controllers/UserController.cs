@@ -29,7 +29,7 @@ public class UserController : ControllerBase
         try
         {
             var user = await _repository.AddAsync(newUser, token).ConfigureAwait(false);
-            return Ok(user.Id);
+            return Ok(user.UserId);
         }
         catch (Exception ex)
         {

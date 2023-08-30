@@ -11,10 +11,10 @@ public class UserRepository : BaseRepository<User>, IUserRepository
     {
     }
 
-    public async Task<User?> GetFullUserByIdAsync(Guid id, CancellationToken token = default)
+    public async Task<User> GetFullUserByIdAsync(Guid id, CancellationToken token = default)
     {
         if (DbContext.Users is null) return null;
-        return await DbContext.Users.Include(u => u.Availabilities.OrderBy(av => av.Date)).SingleOrDefaultAsync(u => u.Id == id, token).ConfigureAwait(false);
+        return await DbContext.Users.Include(u => u.Availabilities.OrderBy(av => av.Date)).SingleOrDefaultAsync(u => u.UserId == id, token).ConfigureAwait(false);
     }
 }
 #nullable enable

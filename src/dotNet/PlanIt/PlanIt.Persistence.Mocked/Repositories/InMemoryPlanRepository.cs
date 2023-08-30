@@ -11,27 +11,27 @@ public class InMemoryPlanRepository : IPlanRepository
     {
         Plan plan1 = new()
         {
-            Id = Guid.NewGuid()
+            PlanId = Guid.NewGuid()
         };
         Plan plan2 = new()
         {
-            Id = Guid.NewGuid()
+            PlanId = Guid.NewGuid()
         };
 
-        _plans.TryAdd(plan1.Id, plan1);
-        _plans.TryAdd(plan2.Id, plan2);
+        _plans.TryAdd(plan1.PlanId, plan1);
+        _plans.TryAdd(plan2.PlanId, plan2);
         _userRepository = userRepository;
     }
 
     public Task<Plan> AddAsync(Plan entity, CancellationToken token = default) => Task.Run(() =>
     {
-        _plans.TryAdd(entity.Id, entity);
+        _plans.TryAdd(entity.PlanId, entity);
         return entity;
     });
 
     public Task DeleteAsync(Plan entity, CancellationToken token = default) => Task.Run(() =>
     {
-        _plans.TryRemove(entity.Id, out var _);
+        _plans.TryRemove(entity.PlanId, out var _);
     });
 
     public Task<Plan?> GetByIdAsync(Guid id, CancellationToken token = default)
@@ -70,8 +70,8 @@ public class InMemoryPlanRepository : IPlanRepository
 
     public Task UpdateAsync(Plan entity, CancellationToken token = default) => Task.Run(() =>
     {
-        _plans.TryGetValue(entity.Id, out var comparison);
+        _plans.TryGetValue(entity.PlanId, out var comparison);
         if (comparison is null) return;
-        _plans.TryUpdate(entity.Id, entity, comparison);
+        _plans.TryUpdate(entity.PlanId, entity, comparison);
     });
 }

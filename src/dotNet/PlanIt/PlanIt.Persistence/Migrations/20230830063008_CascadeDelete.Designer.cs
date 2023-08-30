@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlanIt.Persistence;
 
@@ -11,9 +12,10 @@ using PlanIt.Persistence;
 namespace PlanIt.Persistence.Migrations
 {
     [DbContext(typeof(PlanItDbContext))]
-    partial class PlanItDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230830063008_CascadeDelete")]
+    partial class CascadeDelete
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,7 +26,7 @@ namespace PlanIt.Persistence.Migrations
 
             modelBuilder.Entity("PlanIt.Domain.Entities.Availability", b =>
                 {
-                    b.Property<Guid>("AvailabilityId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -34,7 +36,7 @@ namespace PlanIt.Persistence.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("AvailabilityId");
+                    b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
@@ -43,7 +45,7 @@ namespace PlanIt.Persistence.Migrations
 
             modelBuilder.Entity("PlanIt.Domain.Entities.Plan", b =>
                 {
-                    b.Property<Guid>("PlanId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -53,14 +55,14 @@ namespace PlanIt.Persistence.Migrations
                     b.Property<DateTime>("LastSchedulableDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("PlanId");
+                    b.HasKey("Id");
 
                     b.ToTable("Plans");
                 });
 
             modelBuilder.Entity("PlanIt.Domain.Entities.User", b =>
                 {
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -70,7 +72,7 @@ namespace PlanIt.Persistence.Migrations
                     b.Property<Guid>("PlanId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("UserId");
+                    b.HasKey("Id");
 
                     b.HasIndex("PlanId", "Name")
                         .IsUnique()

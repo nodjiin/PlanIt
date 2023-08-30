@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using PlanIt.Application.Dtos.Plan;
-using PlanIt.Domain.Entities;
 using PlanIt.Presentation.WebApp.Models;
 using PlanIt.Presentation.WebApp.Options;
 using System.Text;
@@ -74,7 +73,7 @@ public class PlanController : Controller
     [Route("[controller]/[action]/{id}")]
     public async Task<IActionResult> Calendar(Guid id, CancellationToken token = default)
     {
-        Plan? plan = await GetPlan(id, false, token).ConfigureAwait(false);
+        ReadPlanDto? plan = await GetPlan(id, false, token).ConfigureAwait(false);
         if (plan == null)
         {
             _logger.LogError("Failed to load plan with Id '{id}'", id);
@@ -88,7 +87,7 @@ public class PlanController : Controller
     [Route("[controller]/[action]/{id}")]
     public async Task<IActionResult> Full(Guid id, CancellationToken token = default)
     {
-        Plan? plan = await GetPlan(id, true, token).ConfigureAwait(false);
+        ReadPlanDto? plan = await GetPlan(id, true, token).ConfigureAwait(false);
         if (plan == null)
         {
             _logger.LogError("Failed to load plan with Id '{id}'", id);
@@ -98,7 +97,7 @@ public class PlanController : Controller
         return View(plan);
     }
 
-    private async Task<Plan?> GetPlan(Guid id, bool full, CancellationToken token = default)
+    private async Task<ReadPlanDto?> GetPlan(Guid id, bool full, CancellationToken token = default)
     {
         try
         {
@@ -111,7 +110,7 @@ public class PlanController : Controller
                 return null;
             }
 
-            return await response.Content.ReadFromJsonAsync<Plan>(cancellationToken: token).ConfigureAwait(false);
+            return await response.Content.ReadFromJsonAsync<ReadPlanDto>(cancellationToken: token).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

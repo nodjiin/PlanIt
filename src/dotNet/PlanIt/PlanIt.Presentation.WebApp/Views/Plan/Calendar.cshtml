@@ -1,7 +1,8 @@
 ﻿@using Microsoft.Extensions.Options;
+@using PlanIt.Application.Dtos.User;
 @using PlanIt.Domain.Entities
 @using PlanIt.Presentation.WebApp.Options;
-@model PlanIt.Domain.Entities.Plan
+@model PlanIt.Application.Dtos.Plan.ReadPlanDto;
 @inject IOptions<PlanItBackendApiUrls> options;
 
 @* User modal *@
@@ -14,9 +15,9 @@
             </div>
             <div class="modal-body">
                 <div class="list-group">
-                    @foreach (var user in @Model.Users ?? Enumerable.Empty<User>())
+                    @foreach (var user in @Model.Users ?? Enumerable.Empty<ReadUserDto>())
                     {
-                        <a class="list-group-item list-group-item-action" data-user-id="@user.Id.ToString()">@user.Name</a>
+                        <a class="list-group-item list-group-item-action" data-user-id="@user.UserId.ToString()">@user.Name</a>
                     }
                 </div>
             </div>
@@ -70,7 +71,7 @@
             hookUpInteractionHandlers();
             setUrls("@userApi", "@Url.Action("Full", "Plan")");
             setLocalizedStrings(months, "@Localizer["saveErr"]", "@Localizer["loadErr"]", "@Localizer["updateErr"]", "@Localizer["invalidNameErr"]");
-            setServerdata(minDate, maxDate, "@Model.Id");
+            setServerdata(minDate, maxDate, "@Model.PlanId");
             run();
         });
     </script>

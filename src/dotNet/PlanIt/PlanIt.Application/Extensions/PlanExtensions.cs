@@ -13,7 +13,7 @@ public static class PlanExtensions
     public static ReadPlanDto ConvertToDto(this Plan plan)
     {
         ReadPlanDto dto = new ReadPlanDto();
-        dto.Id = plan.Id;
+        dto.PlanId = plan.PlanId;
         dto.FirstSchedulableDate = plan.FirstSchedulableDate;
         dto.LastSchedulableDate = plan.LastSchedulableDate;
         if (plan.Users != null)

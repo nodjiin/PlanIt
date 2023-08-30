@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlanIt.Persistence;
 
@@ -11,9 +12,10 @@ using PlanIt.Persistence;
 namespace PlanIt.Persistence.Migrations
 {
     [DbContext(typeof(PlanItDbContext))]
-    partial class PlanItDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230830075254_ModifiedGenericId")]
+    partial class ModifiedGenericId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

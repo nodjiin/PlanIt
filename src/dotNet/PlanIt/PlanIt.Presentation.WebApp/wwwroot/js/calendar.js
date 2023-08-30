@@ -214,12 +214,14 @@ async function loadUser(userId) {
         // this could be optimized by sorting and grouping all the dates
         // belonging to the same month together, but yet again, with the number
         // of elements I have to handle this shouldn't really matter
-        for (let i = 0; i < avail.length; i++) {
-            const date = new Date(avail[i].date);
-            const day = padDay(date);
-            date.setDate(1); // setting to first day of the month to match the key
-            const cache = statusCache.get(createMonthKey(date));
-            cache[day] = available;
+        if (avail !== null && typeof avail !== "undefined") {
+            for (let i = 0; i < avail.length; i++) {
+                const date = new Date(avail[i].date);
+                const day = padDay(date);
+                date.setDate(1); // setting to first day of the month to match the key
+                const cache = statusCache.get(createMonthKey(date));
+                cache[day] = available;
+            }
         }
 
         // run updateMonth to load the cache

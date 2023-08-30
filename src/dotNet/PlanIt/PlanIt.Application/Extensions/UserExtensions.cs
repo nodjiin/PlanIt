@@ -33,7 +33,7 @@ public static class UserExtensions
         {
             while (i < sortedDates.Count)
             {
-                user.Availabilities.Add(new Availability { UserId = user.Id, Date = sortedDates[i++].Date });
+                user.Availabilities.Add(new Availability { UserId = user.UserId, Date = sortedDates[i++].Date });
             }
         }
         else if (user.Availabilities.Count > sortedDates.Count) // or remove the additional ones
@@ -48,7 +48,7 @@ public static class UserExtensions
     public static ReadUserDto ConvertToDto(this User user)
     {
         ReadUserDto dto = new ReadUserDto();
-        dto.Id = user.Id;
+        dto.UserId = user.UserId;
         dto.Name = user.Name;
         if (user.Availabilities != null)
         {

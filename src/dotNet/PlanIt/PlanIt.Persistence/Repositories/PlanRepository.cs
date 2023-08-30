@@ -13,7 +13,7 @@ public class PlanRepository : BaseRepository<Plan>, IPlanRepository
     {
         if (DbContext.Plans is null) return null;
 
-        return await DbContext.Plans.Where(p => p.Id == id).Include(p => p.Users).FirstOrDefaultAsync(token).ConfigureAwait(false);
+        return await DbContext.Plans.Where(p => p.PlanId == id).Include(p => p.Users).FirstOrDefaultAsync(token).ConfigureAwait(false);
     }
 
     public async Task<Plan?> GetPlanWithUsersAndAvailabilitiesAsync(Guid id, CancellationToken token = default)
@@ -21,7 +21,7 @@ public class PlanRepository : BaseRepository<Plan>, IPlanRepository
         if (DbContext.Plans is null) return null;
 
 #nullable disable // EF handles the nullability of the internal collections
-        return await DbContext.Plans.Where(p => p.Id == id).Include(p => p.Users).ThenInclude(u => u.Availabilities).FirstOrDefaultAsync(token).ConfigureAwait(false);
+        return await DbContext.Plans.Where(p => p.PlanId == id).Include(p => p.Users).ThenInclude(u => u.Availabilities).FirstOrDefaultAsync(token).ConfigureAwait(false);
 #nullable enable
     }
 }

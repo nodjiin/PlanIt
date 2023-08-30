@@ -26,7 +26,7 @@ public class PlanController : Controller
     {
         var newPlan = _factory.Create(createPlanDto);
         var plan = await _repository.AddAsync(newPlan, token).ConfigureAwait(false);
-        return Ok(plan.Id);
+        return Ok(plan.PlanId);
     }
 
     [HttpGet]

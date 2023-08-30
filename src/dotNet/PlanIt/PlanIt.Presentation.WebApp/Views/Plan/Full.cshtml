@@ -1,4 +1,4 @@
-﻿@model PlanIt.Domain.Entities.Plan
+﻿@model PlanIt.Application.Dtos.Plan.ReadPlanDto;
 
 @* Calendar *@
 @await Html.PartialAsync("_CalendarComponent")
@@ -23,7 +23,7 @@
             getUIElements();
             hookUpInteractionHandlers();
             setLocalizedStrings(months);
-            setServerdata(minDate, maxDate, "@Model.Id", users);
+            setServerdata(minDate, maxDate, "@Model.PlanId", users);
             run();
         });
     </script>
