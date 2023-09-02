@@ -98,7 +98,7 @@ function prefillCache() {
     date.setDate(1);
 
     while (compYearsMonths(date, maxDate) <= 0) {
-        const cachedValues = [35];
+        const cachedValues = [42];
         let firstDayOfWeek = getFirstDayOfTheWeek(date);
         let dayIndex = 0;
 
@@ -120,7 +120,7 @@ function prefillCache() {
         }
 
         // finish up the rest
-        while (dayIndex < 35) {
+        while (dayIndex < 42) {
             cachedValues[dayIndex++] = outOfRange;
         }
 
@@ -130,8 +130,8 @@ function prefillCache() {
 }
 
 function updateCache(key) {
-    const statusesToCache = [35];
-    for (let i = 0; i < 35; i++) {
+    const statusesToCache = [42];
+    for (let i = 0; i < 42; i++) {
         statusesToCache[i] = dateElements[i].getStatus();
     }
     statusCache.set(key, statusesToCache);
@@ -150,11 +150,11 @@ function fillAvailabilities(user, statuses, month) {
     let day = new Date(month);
     let index = 0;
 
-    while (statuses[index] === outOfRange && index < 35) {
+    while (statuses[index] === outOfRange && index < 42) {
         index++;
     }
 
-    while (statuses[index] !== outOfRange && index < 35) {
+    while (statuses[index] !== outOfRange && index < 42) {
         if (statuses[index] === available) {
             user.Availabilities.push({ date: day.toJSON() });
         }
@@ -389,7 +389,7 @@ function fillCalendar(newMonth, cachedStatuses) {
     }
 
     // finish up the rest
-    while (dayIndex < 35) {
+    while (dayIndex < 42) {
         dateElements[dayIndex++].updateStatus(outOfRange);
     }
 }
@@ -408,8 +408,8 @@ export function getUIElements() {
     monthp = document.getElementById("monthp");
     prevMonthArr = document.getElementById("prevMonthArr");
     nextMonthArr = document.getElementById("nextMonthArr");
-    dateElements = [35];
-    for (let i = 0; i < 35; i++) {
+    dateElements = [42];
+    for (let i = 0; i < 42; i++) {
         dateElements[i] = new DateElement(document.getElementById("de_" + i));
     }
 }

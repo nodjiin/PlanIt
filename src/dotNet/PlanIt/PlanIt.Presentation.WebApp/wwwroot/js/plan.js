@@ -128,7 +128,7 @@ function updateMonth() {
     }
 
     // finish up the rest
-    while (dayIndex < 35) {
+    while (dayIndex < 42) {
         planElements[dayIndex++].updateStatus(outOfRange);
     }
 }
@@ -181,8 +181,8 @@ export function getUIElements() {
     prevMonthArr = document.getElementById("prevMonthArr");
     nextMonthArr = document.getElementById("nextMonthArr");
     backToCalendarBtn = document.getElementById("backToCalendarBtn"); 
-    planElements = [35];
-    for (let i = 0; i < 35; i++) {
+    planElements = [42];
+    for (let i = 0; i < 42; i++) {
         planElements[i] = new PlanElement(document.getElementById("de_" + i));
     }
 }
