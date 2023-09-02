@@ -159,6 +159,15 @@
   <data name="may" xml:space="preserve">
     <value>maggio</value>
   </data>
+  <data name="modalBtn" xml:space="preserve">
+    <value>+</value>
+  </data>
+  <data name="modalText" xml:space="preserve">
+    <value>Inserisci il tuo nome!</value>
+  </data>
+  <data name="modalTitle" xml:space="preserve">
+    <value>Chi sei?</value>
+  </data>
   <data name="nov" xml:space="preserve">
     <value>novembre</value>
   </data>
