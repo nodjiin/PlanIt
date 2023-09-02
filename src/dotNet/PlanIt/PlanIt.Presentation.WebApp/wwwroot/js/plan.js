@@ -215,3 +215,8 @@ export function run() {
         nextMonthArr.style.display = "none";
     }
 }
+
+// TODO display who's available on partial availability date
+// maibe a popup with a list of names will be enough?
+
+// TODO share plan button

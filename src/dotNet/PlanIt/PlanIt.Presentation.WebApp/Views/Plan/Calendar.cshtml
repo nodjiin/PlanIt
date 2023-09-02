@@ -35,18 +35,18 @@
 @* Calendar *@
 @await Html.PartialAsync("_CalendarComponent")
 
-@* TODO I need to rethink the UI here, this is sooooo ugly *@
-<div class="text-center mt-5">
-    <span>@Localizer["saveSpan"]</span>
-    <button id="saveBtn" type="button" class="btn btn-primary">@Localizer["saveBtn"]</button>
+<div class="container mt-4 text-center" style="width:20rem;">
+    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-2" style="align-items:center;">
+        <span>@Localizer["saveSpan"]</span>
+        <button id="saveBtn" type="button" class="btn btn-primary">@Localizer["saveBtn"]</button>
+    </div>
+
+    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center" style="align-items:center;">
+        <span>@Localizer["changeSpan"]</span>
+        <button id="changeBtn" type="button" class="btn btn-primary">@Localizer["changeBtn"]</button>
+    </div>
 </div>
 
-<div class="text-center mt-5">
-    <span>@Localizer["changeSpan"]</span>
-    <button id="changeBtn" type="button" class="btn btn-primary">@Localizer["changeBtn"]</button>
-</div>
-
-@*Alert*@
 @await Html.PartialAsync("_Alerts")
 
 @{

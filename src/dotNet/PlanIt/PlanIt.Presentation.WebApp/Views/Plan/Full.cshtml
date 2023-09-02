@@ -2,9 +2,12 @@
 
 @* Calendar *@
 @await Html.PartialAsync("_CalendarComponent")
-<div class="text-center mt-5">
-    <span>@Localizer["backToCalendarSpan"]</span>
-    <button id="backToCalendarBtn" type="button" class="btn btn-primary">@Localizer["backToCalendarBtn"]</button>
+
+<div class="container mt-4 text-center" style="width:20rem;">
+    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-2" style="align-items:center;">
+        <span>@Localizer["backToCalendarSpan"]</span>
+        <button id="backToCalendarBtn" type="button" class="btn btn-primary">@Localizer["backToCalendarBtn"]</button>
+    </div>
 </div>
 
 @section Scripts {

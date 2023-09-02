@@ -127,7 +127,7 @@
     <value>ChangeIt!</value>
   </data>
   <data name="changeSpan" xml:space="preserve">
-    <value>Did you select the wrong user?</value>
+    <value>Wrong user?</value>
   </data>
   <data name="dec" xml:space="preserve">
     <value>december</value>
@@ -172,7 +172,7 @@
     <value>Error while saving your availabilities.</value>
   </data>
   <data name="saveSpan" xml:space="preserve">
-    <value>Fill your plan and</value>
+    <value>Select your free days and</value>
   </data>
   <data name="sep" xml:space="preserve">
     <value>sectember</value>

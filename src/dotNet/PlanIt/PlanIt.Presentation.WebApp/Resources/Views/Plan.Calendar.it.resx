@@ -127,7 +127,7 @@
     <value>Cambialo!</value>
   </data>
   <data name="changeSpan" xml:space="preserve">
-    <value>Hai selezionato l'utente sbagliato?</value>
+    <value>Utente sbagliato?</value>
   </data>
   <data name="dec" xml:space="preserve">
     <value>dicembre</value>
@@ -166,13 +166,13 @@
     <value>ottobre</value>
   </data>
   <data name="saveBtn" xml:space="preserve">
-    <value>Salvale!</value>
+    <value>Salvali!</value>
   </data>
   <data name="saveErr" xml:space="preserve">
     <value>Non è stato possibile salvare le tue disponibilità.</value>
   </data>
   <data name="saveSpan" xml:space="preserve">
-    <value>Seleziona le tue disponibilità e</value>
+    <value>Seleziona i tuoi giorni liberi e</value>
   </data>
   <data name="sep" xml:space="preserve">
     <value>settembre</value>
