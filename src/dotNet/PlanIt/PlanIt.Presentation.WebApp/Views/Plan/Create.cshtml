@@ -4,37 +4,39 @@
     <form asp-controller="Plan" asp-action="Create" method="post" class="px-4 my-5 text-center">
         <img class="d-block mx-auto mb-4" src="~/img/calendar.png" alt="plan img" width="80" height="80">
         <h1 class="display-5 fw-bold">@Localizer["createH1"]</h1>
-        <div class="col-lg-6 mx-auto">
+        <div class="mx-auto">
             <p class="lead mb-4">@Localizer["selectParagraph"]</p>
-            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-4">
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
                 <span>@Localizer["fromSpan"]</span> <input type="date" asp-for="DateFrom">
                 <span>@Localizer["toSpan"]</span> <input type="date" asp-for="DateTo">
             </div>
-            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                <span class="bold centered-span">@Localizer["andSpan"]</span> <button id="submitBtn" type="submit"
-                    class="btn btn-primary btn-lg px-4 gap-3">@Localizer["createButton"]</button>
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center btn-container">
+                <span class="bold">@Localizer["andSpan"]</span>
+                <button id="submitBtn" type="submit" class="btn btn-primary btn-lg px-4 gap-3">
+                    @Localizer["createButton"]
+                </button>
             </div>
         </div>
     </form>
 </div>
 
 @section Scripts
-{
-<script>
-    document.ready(function () {
-        const button = document.getElementById("submitBtn");
-        const [from, to] = document.getElementsByTagName("input");
+    {
+    <script>
+        document.ready(function () {
+            const button = document.getElementById("submitBtn");
+            const [from, to] = document.getElementsByTagName("input");
 
-        function enableOrDisableSubmit() {
-            if (from.value > to.value) {
-                button.disabled = true;
-            } else {
-                button.disabled = false;
+            function enableOrDisableSubmit() {
+                if (from.value > to.value) {
+                    button.disabled = true;
+                } else {
+                    button.disabled = false;
+                }
             }
-        }
 
-        from.addEventListener("change", enableOrDisableSubmit);
-        to.addEventListener("change", enableOrDisableSubmit);
-    });
-</script>
+            from.addEventListener("change", enableOrDisableSubmit);
+            to.addEventListener("change", enableOrDisableSubmit);
+        });
+    </script>
 }

@@ -16,8 +16,3 @@ html {
 body {
   margin-bottom: 30px;
 }
-
-.centered-span {
-  display: inline-flex;
-  align-items: center;
-}
